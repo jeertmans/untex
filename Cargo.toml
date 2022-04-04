@@ -1,0 +1,21 @@
+[package]
+name = "untex"
+version = "0.1.0-alpha"
+authors = ["Jérome Eertmans <jeertmans@icloud.com>"]
+edition = "2021"
+
+[lib]
+name = "untex"
+path = "src/lib/lib.rs"
+
+[[bin]]
+name = "untex"
+path = "src/bin.rs"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ansi_term = "0.12.1"
+logos = "0.12.0"
+regex = "1"
+clap = { version = "3.1.8", features = ["derive"] }
