@@ -3,6 +3,11 @@ name = "untex"
 version = "0.1.0-alpha"
 authors = ["Jérome Eertmans <jeertmans@icloud.com>"]
 edition = "2021"
+description = "Understand and manipulate TeX files with ease."
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/jeertmans/untex"
+keywords = ["LaTeX", "TeX", "lexer", "detex", "opendetex"]
 
 [lib]
 name = "untex"
