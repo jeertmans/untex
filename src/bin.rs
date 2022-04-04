@@ -32,7 +32,7 @@ pub fn main() {
         Some(("explain", sub_matches)) => {
             let filename = sub_matches.value_of("FILE").unwrap();
             let verbose = sub_matches.is_present("verbose");
-            explain_file(&filename, verbose);
+            explain_file(filename, verbose);
         }
         _ => unreachable!(),
     }
