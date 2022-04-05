@@ -1,20 +1,32 @@
+use regex::Regex;
 use std::str::CharIndices;
 
+#[derive(Debug, PartialEq, Clone)]
+pub enum Token {
+    Comment,
+    Linebreak,
+    Command,
+    Text,
+    Error, // Syntax error
+}
+
 #[derive(Debug, Clone)]
-pub struct Lexer<'source> {
+pub struct BasicLexer<'source> {
     source: &'source str,
     char_iter: CharIndices<'source>,
     start: usize,
     last_char: Option<(usize, char)>,
+    pub lineno: usize,
 }
 
-impl<'source> Lexer<'source> {
+impl<'source> BasicLexer<'source> {
     pub fn new(source: &'source str) -> Self {
         Self {
             source,
             char_iter: source.char_indices(),
             start: 0,
             last_char: None,
+            lineno: 0,
         }
     }
 
@@ -27,16 +39,7 @@ impl<'source> Lexer<'source> {
     }
 }
 
-#[derive(Debug, PartialEq)]
-pub enum Token {
-    Comment,
-    Linebreak,
-    Command,
-    Text,
-    Error, // Syntax error
-}
-
-impl<'source> Iterator for Lexer<'source> {
+impl<'source> Iterator for BasicLexer<'source> {
     type Item = Token;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -53,6 +56,8 @@ impl<'source> Iterator for Lexer<'source> {
                 match c {
                     '\n' => {
                         // A linebreak is ended by anything that is not as space, a tabulate or a carriage return
+                        self.lineno += 1;
+
                         loop {
                             self.last_char = self.char_iter.next();
 
@@ -77,7 +82,10 @@ impl<'source> Iterator for Lexer<'source> {
                             }
 
                             match self.last_char.unwrap().1 {
-                                '\n' => break,
+                                '\n' => {
+                                    self.lineno += 1;
+                                    break;
+                                }
                                 _ => continue,
                             }
                         }
@@ -101,7 +109,7 @@ impl<'source> Iterator for Lexer<'source> {
                                             Some((_, c)) => match c {
                                                 'a'..='z' | 'A'..='Z' => continue,
                                                 '{' | '[' => break,
-                                                _ => return Some(Token::Command), // A space after the name ends the command
+                                                _ => return Some(Token::Command), // Anything else after the name ends the command
                                             },
                                         }
                                     }
@@ -136,6 +144,8 @@ impl<'source> Iterator for Lexer<'source> {
                                                                 if self.last_char.is_none() {
                                                                     break;
                                                                 }
+                                                            } else if c == '\n' {
+                                                                self.lineno += 1;
                                                             }
                                                         }
                                                     }
@@ -175,7 +185,11 @@ impl<'source> Iterator for Lexer<'source> {
                             }
 
                             match self.last_char.unwrap().1 {
-                                '\n' | '%' | '\\' => break,
+                                '\n' => {
+                                    self.lineno += 1;
+                                    break;
+                                }
+                                '%' | '\\' => break,
                                 _ => continue,
                             }
                         }
@@ -187,9 +201,134 @@ impl<'source> Iterator for Lexer<'source> {
     }
 }
 
+#[derive(Debug, Clone)]
+pub struct RecursiveLexer<'source> {
+    lexers: Vec<Lexer<'source>>,
+    command_re: Vec<Regex>,
+}
+
+impl<'source> RecursiveLexer<'source> {
+    pub fn new(source: &'source str, command_re: Vec<Regex>) -> Self {
+        Self {
+            lexers: vec![Lexer::Basic(BasicLexer::new(source))],
+            command_re,
+        }
+    }
+
+    pub fn slice(&self) -> &'source str {
+        self.lexers.last().unwrap().slice()
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct DummyLexer<'source> {
+    source: &'source str,
+    token: Token,
+    has_iterated: bool,
+}
+
+impl<'source> DummyLexer<'source> {
+    pub fn new(source: &'source str, token: Token) -> Self {
+        Self {
+            source,
+            token,
+            has_iterated: false,
+        }
+    }
+
+    pub fn slice(&self) -> &'source str {
+        self.source
+    }
+}
+
+impl<'source> Iterator for DummyLexer<'source> {
+    type Item = Token;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.has_iterated {
+            None
+        } else {
+            self.has_iterated = true;
+            Some(self.token.clone())
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub enum Lexer<'source> {
+    Basic(BasicLexer<'source>),
+    Recursive(RecursiveLexer<'source>),
+    Dummy(DummyLexer<'source>),
+}
+
+impl<'source> Lexer<'source> {
+    pub fn slice(&self) -> &'source str {
+        match self {
+            Lexer::Basic(l) => l.slice(),
+            Lexer::Recursive(l) => l.slice(),
+            Lexer::Dummy(l) => l.slice(),
+        }
+    }
+
+    fn next(&mut self) -> Option<Token> {
+        match self {
+            Lexer::Basic(l) => l.next(),
+            Lexer::Recursive(l) => l.next(),
+            Lexer::Dummy(l) => l.next(),
+        }
+    }
+}
+
+impl<'source> Iterator for RecursiveLexer<'source> {
+    type Item = Token;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let n_lexers = self.lexers.len();
+        let (next_token, next_slice) = {
+            let lexer = self.lexers.last_mut().unwrap();
+
+            (lexer.next(), lexer.slice())
+        };
+
+        if n_lexers == 1 && next_token.is_none() {
+            return None;
+        }
+
+        match next_token {
+            Some(Token::Command) => {
+                for re in self.command_re.iter() {
+                    match re.captures(next_slice) {
+                        None => continue,
+                        Some(caps) => {
+                            //let new_slice: &'source str = &caps[2];
+                            self.lexers
+                                .push(Lexer::Dummy(DummyLexer::new(caps.get(3).unwrap().as_str(), Token::Command)));
+
+                            self.lexers
+                                .push(Lexer::Basic(BasicLexer::new(caps.get(2).unwrap().as_str())));
+
+                            self.lexers
+                                .push(Lexer::Dummy(DummyLexer::new(caps.get(1).unwrap().as_str(), Token::Command)));
+
+                            return self.next()
+                        }
+                    }
+                }
+
+                Some(Token::Command)
+            }
+            None => {
+                self.lexers.pop();
+                self.next()
+            }
+            Some(token) => Some(token),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::lexer::{Lexer, Token};
+    use crate::lexer::{BasicLexer, Token};
     use std::fs::File;
     use std::io::prelude::*;
 
@@ -198,7 +337,7 @@ mod tests {
         let mut file = File::open("tests/data/minimal.tex").unwrap();
         let mut contents = String::new();
         file.read_to_string(&mut contents).unwrap();
-        let mut lex = Lexer::new(&contents);
+        let mut lex = BasicLexer::new(&contents);
 
         assert_eq!(lex.next(), Some(Token::Command));
         assert_eq!(lex.slice(), r"\documentclass{article}");

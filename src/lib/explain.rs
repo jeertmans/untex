@@ -1,5 +1,6 @@
-use crate::lexer::{Lexer, Token};
+use crate::lexer::{RecursiveLexer, Token};
 use ansi_term::{Colour, Style};
+use regex::Regex;
 use std::fs::File;
 use std::io::Read;
 
@@ -7,7 +8,11 @@ pub fn explain_file(filename: &str, verbose: bool) {
     let mut file = File::open(filename).unwrap();
     let mut contents = String::new();
     file.read_to_string(&mut contents).unwrap();
-    let mut lex = Lexer::new(&contents);
+    let mut lex = RecursiveLexer::new(
+        &contents,
+        vec![Regex::new(r"(^\\title\{)([\s\S]*)(\}$)").unwrap(),
+        Regex::new(r"(^\\section\{)([\s\S]*)(\}$)").unwrap()],
+    );
 
     let text_style = Style::new();
     let linebreak_style = Style::new().on(Colour::Red);
