@@ -11,7 +11,7 @@ UnTeX is both a library and an executable that allows you to manipulate and unde
 
 If you wish to use the executable, you can install it with Cargo:
 ```
-cargo install untex --version 0.1.0-alha
+cargo install untex --version 0.1.1-alha
 ```
 *Warning: as UnTeX is still in alpha version, you must specify the version to download with Cargo.*
 
@@ -19,12 +19,21 @@ cargo install untex --version 0.1.0-alha
 
 You can use UnTeX in your Rust project by adding to your `Cargo.toml`:
 ```toml
-untex = "0.1.0-alpha"
+untex = "0.1.1-alpha"
 ```
 
 ### Disclaimers
 
 As this project is under active development, expect non backward compatible changes from version to version.
+
+### TODO List
+
+- [ ] Declare a `Lexer` trait instead of an enum to avoid useless code
+- [ ] Define command regexes in a config files (and maybe some can be hardcoded)
+- [ ] Recursively lex files that are given by \input commands
+- [ ] Keep fileno reference inside lexers
+- [ ] Construct a list of file depedencies (\input, \includegraphics, ...)
+- [ ] ...
 
 ## Contributing
 
