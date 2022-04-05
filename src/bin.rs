@@ -4,17 +4,17 @@ use clap::{Arg, Command};
 
 pub fn main() {
     let matches = Command::new("UnTeX")
-        .version("0.1.0-alpha")
+        .version("0.1.1-alpha")
         .author("Jérome Eertmans <jeertmans@icloud.com>")
         .about("Understand and manipulate TeX files.")
         .subcommand_required(true)
         .arg_required_else_help(true)
         .subcommand(
             Command::new("explain")
-            .about("Give an internal explanation of a file. Useful to see how UnTeX understands TeX files.")
+            .about("Give an internal explanation of a file. Useful to see how UnTeX understands TeX files")
             .arg(
                 Arg::new("FILE")
-                    .help("Sets the input file to use")
+                    .help("Set the input file to use")
                     .required(true)
                     .index(1),
             )
