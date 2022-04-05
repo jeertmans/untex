@@ -301,16 +301,20 @@ impl<'source> Iterator for RecursiveLexer<'source> {
                         None => continue,
                         Some(caps) => {
                             //let new_slice: &'source str = &caps[2];
-                            self.lexers
-                                .push(Lexer::Dummy(DummyLexer::new(caps.get(3).unwrap().as_str(), Token::Command)));
+                            self.lexers.push(Lexer::Dummy(DummyLexer::new(
+                                caps.get(3).unwrap().as_str(),
+                                Token::Command,
+                            )));
 
                             self.lexers
                                 .push(Lexer::Basic(BasicLexer::new(caps.get(2).unwrap().as_str())));
 
-                            self.lexers
-                                .push(Lexer::Dummy(DummyLexer::new(caps.get(1).unwrap().as_str(), Token::Command)));
+                            self.lexers.push(Lexer::Dummy(DummyLexer::new(
+                                caps.get(1).unwrap().as_str(),
+                                Token::Command,
+                            )));
 
-                            return self.next()
+                            return self.next();
                         }
                     }
                 }
