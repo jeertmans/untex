@@ -10,8 +10,10 @@ pub fn explain_file(filename: &str, verbose: bool) {
     file.read_to_string(&mut contents).unwrap();
     let mut lex = RecursiveLexer::new(
         &contents,
-        vec![Regex::new(r"(^\\title\{)([\s\S]*)(\}$)").unwrap(),
-        Regex::new(r"(^\\section\{)([\s\S]*)(\}$)").unwrap()],
+        vec![
+            Regex::new(r"(^\\title\{)([\s\S]*)(\}$)").unwrap(),
+            Regex::new(r"(^\\section\{)([\s\S]*)(\}$)").unwrap(),
+        ],
     );
 
     let text_style = Style::new();
