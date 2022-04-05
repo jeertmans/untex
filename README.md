@@ -5,6 +5,23 @@
 
 UnTeX is both a library and an executable that allows you to manipulate and understand TeX files.
 
+### Usage
+
+#### Executable
+
+If you wish to use the executable, you can install it with Cargo:
+```
+cargo install untex --version 0.1.0-alha
+```
+*Warning: as UnTeX is still in alpha version, you must specify the version to download with Cargo.*
+
+#### Library
+
+You can use UnTeX in your Rust project by adding to your `Cargo.toml`:
+```toml
+untex = "0.1.0-alpha"
+```
+
 ### Disclaimers
 
 As this project is under active development, expect non backward compatible changes from version to version.
