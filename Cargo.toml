@@ -21,6 +21,5 @@ path = "src/bin.rs"
 
 [dependencies]
 ansi_term = "0.12.1"
-logos = "0.12.0"
 regex = "1"
 clap = { version = "3.1.8", features = ["derive"] }
