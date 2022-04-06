@@ -11,7 +11,7 @@ UnTeX is both a library and an executable that allows you to manipulate and unde
 
 If you wish to use the executable, you can install it with Cargo:
 ```
-cargo install untex --version 0.1.1-alha
+cargo install untex --version 0.2.0-alha
 ```
 *Warning: as UnTeX is still in alpha version, you must specify the version to download with Cargo.*
 
