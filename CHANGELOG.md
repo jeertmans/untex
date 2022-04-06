@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.1.2-alpha] - 2022-04-05
+## [0.2.0-alpha] - 2022-04-06
 
 ### Bug Fixes
 
@@ -11,12 +11,17 @@ All notable changes to this project will be documented in this file.
 ### Features
 
 - Now recursively lexing commands
+- Use trait instead of enum
 
 ### Miscellaneous Tasks
 
 - Add usage guidelines
 - Update version in Cargo.toml
 - Update version and add todo list
+- Update changelog
+- Remove unused crate logos
+- Warn of missing docs
+- Update version
 
 ## [0.1.0-alpha] - 2022-04-04
 
