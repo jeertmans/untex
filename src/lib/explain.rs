@@ -1,4 +1,5 @@
 use crate::lexer::{RecursiveLexer, Token};
+use crate::lexer::{Lexer, RecursiveLexer, Token};
 use ansi_term::{Colour, Style};
 use regex::Regex;
 use std::fs::File;

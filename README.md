@@ -28,7 +28,6 @@ As this project is under active development, expect non backward compatible chan
 
 ### TODO List
 
-- [ ] Declare a `Lexer` trait instead of an enum to avoid useless code
 - [ ] Define command regexes in a config files (and maybe some can be hardcoded)
 - [ ] Recursively lex files that are given by \input commands
 - [ ] Keep fileno reference inside lexers

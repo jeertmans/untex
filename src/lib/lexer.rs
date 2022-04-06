@@ -10,7 +10,46 @@ pub enum Token {
     Error, // Syntax error
 }
 
-#[derive(Debug, Clone)]
+/// A proper TeX lever must implement this trait.
+pub trait Lexer<'source>: Iterator<Item = Token> {
+    fn slice(&self) -> &'source str;
+}
+
+pub struct OneTokenLexer<'source> {
+    source: &'source str,
+    token: Token,
+    has_iterated: bool,
+}
+
+impl<'source> OneTokenLexer<'source> {
+    pub fn new(source: &'source str, token: Token) -> Self {
+        Self {
+            source,
+            token,
+            has_iterated: false,
+        }
+    }
+}
+
+impl<'source> Lexer<'source> for OneTokenLexer<'source> {
+    fn slice(&self) -> &'source str {
+        self.source
+    }
+}
+
+impl<'source> Iterator for OneTokenLexer<'source> {
+    type Item = Token;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.has_iterated {
+            None
+        } else {
+            self.has_iterated = true;
+            Some(self.token.clone())
+        }
+    }
+}
+
 pub struct BasicLexer<'source> {
     source: &'source str,
     char_iter: CharIndices<'source>,
@@ -29,8 +68,10 @@ impl<'source> BasicLexer<'source> {
             lineno: 0,
         }
     }
+}
 
-    pub fn slice(&self) -> &'source str {
+impl<'source> Lexer<'source> for BasicLexer<'source> {
+    fn slice(&self) -> &'source str {
         let end = match self.last_char {
             Some((i, _)) => i,
             None => self.source.len(), // By default, the slice points to everything
@@ -201,81 +242,23 @@ impl<'source> Iterator for BasicLexer<'source> {
     }
 }
 
-#[derive(Debug, Clone)]
 pub struct RecursiveLexer<'source> {
-    lexers: Vec<Lexer<'source>>,
+    lexers: Vec<Box<dyn Lexer<'source> + 'source>>,
     command_re: Vec<Regex>,
 }
 
 impl<'source> RecursiveLexer<'source> {
     pub fn new(source: &'source str, command_re: Vec<Regex>) -> Self {
         Self {
-            lexers: vec![Lexer::Basic(BasicLexer::new(source))],
+            lexers: vec![Box::new(BasicLexer::new(source))],
             command_re,
         }
     }
+}
 
-    pub fn slice(&self) -> &'source str {
+impl<'source> Lexer<'source> for RecursiveLexer<'source> {
+    fn slice(&self) -> &'source str {
         self.lexers.last().unwrap().slice()
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct DummyLexer<'source> {
-    source: &'source str,
-    token: Token,
-    has_iterated: bool,
-}
-
-impl<'source> DummyLexer<'source> {
-    pub fn new(source: &'source str, token: Token) -> Self {
-        Self {
-            source,
-            token,
-            has_iterated: false,
-        }
-    }
-
-    pub fn slice(&self) -> &'source str {
-        self.source
-    }
-}
-
-impl<'source> Iterator for DummyLexer<'source> {
-    type Item = Token;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.has_iterated {
-            None
-        } else {
-            self.has_iterated = true;
-            Some(self.token.clone())
-        }
-    }
-}
-
-#[derive(Debug, Clone)]
-pub enum Lexer<'source> {
-    Basic(BasicLexer<'source>),
-    Recursive(RecursiveLexer<'source>),
-    Dummy(DummyLexer<'source>),
-}
-
-impl<'source> Lexer<'source> {
-    pub fn slice(&self) -> &'source str {
-        match self {
-            Lexer::Basic(l) => l.slice(),
-            Lexer::Recursive(l) => l.slice(),
-            Lexer::Dummy(l) => l.slice(),
-        }
-    }
-
-    fn next(&mut self) -> Option<Token> {
-        match self {
-            Lexer::Basic(l) => l.next(),
-            Lexer::Recursive(l) => l.next(),
-            Lexer::Dummy(l) => l.next(),
-        }
     }
 }
 
@@ -301,15 +284,15 @@ impl<'source> Iterator for RecursiveLexer<'source> {
                         None => continue,
                         Some(caps) => {
                             //let new_slice: &'source str = &caps[2];
-                            self.lexers.push(Lexer::Dummy(DummyLexer::new(
+                            self.lexers.push(Box::new(OneTokenLexer::new(
                                 caps.get(3).unwrap().as_str(),
                                 Token::Command,
                             )));
 
                             self.lexers
-                                .push(Lexer::Basic(BasicLexer::new(caps.get(2).unwrap().as_str())));
+                                .push(Box::new(BasicLexer::new(caps.get(2).unwrap().as_str())));
 
-                            self.lexers.push(Lexer::Dummy(DummyLexer::new(
+                            self.lexers.push(Box::new(OneTokenLexer::new(
                                 caps.get(1).unwrap().as_str(),
                                 Token::Command,
                             )));
@@ -332,7 +315,7 @@ impl<'source> Iterator for RecursiveLexer<'source> {
 
 #[cfg(test)]
 mod tests {
-    use crate::lexer::{BasicLexer, Token};
+    use crate::lexer::{BasicLexer, Lexer, Token};
     use std::fs::File;
     use std::io::prelude::*;
 
