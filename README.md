@@ -19,7 +19,7 @@ cargo install untex --version 0.1.1-alha
 
 You can use UnTeX in your Rust project by adding to your `Cargo.toml`:
 ```toml
-untex = "0.1.1-alpha"
+untex = "0.2.0-alpha"
 ```
 
 ### Disclaimers

@@ -4,7 +4,7 @@ use clap::{Arg, Command};
 
 pub fn main() {
     let matches = Command::new("UnTeX")
-        .version("0.1.1-alpha")
+        .version("0.2.0-alpha")
         .author("Jérome Eertmans <jeertmans@icloud.com>")
         .about("Understand and manipulate TeX files.")
         .subcommand_required(true)
