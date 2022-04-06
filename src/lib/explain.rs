@@ -1,4 +1,5 @@
-use crate::lexer::{RecursiveLexer, Token};
+#![warn(missing_docs)]
+
 use crate::lexer::{Lexer, RecursiveLexer, Token};
 use ansi_term::{Colour, Style};
 use regex::Regex;

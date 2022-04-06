@@ -32,6 +32,7 @@ As this project is under active development, expect non backward compatible chan
 - [ ] Recursively lex files that are given by \input commands
 - [ ] Keep fileno reference inside lexers
 - [ ] Construct a list of file depedencies (\input, \includegraphics, ...)
+- [ ] Document functions
 - [ ] ...
 
 ## Contributing

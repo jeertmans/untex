@@ -1,20 +1,30 @@
+#![warn(missing_docs)]
+
 use regex::Regex;
 use std::str::CharIndices;
 
+/// Enumerates all the possible atoms that can be found in a TeX file.
 #[derive(Debug, PartialEq, Clone)]
 pub enum Token {
+    /// A commended part
     Comment,
+    /// A linebreak, optionally followed by any number of tabulates or spaces
     Linebreak,
+    /// Anything that could be a command (please use a space after a command to properly end it)
     Command,
+    /// Anything else, that is assume to be printed out when the TeX file is compiled into PDF
     Text,
+    /// An error occured when parsing the TeX file
     Error, // Syntax error
 }
 
 /// A proper TeX lever must implement this trait.
 pub trait Lexer<'source>: Iterator<Item = Token> {
+    /// Returns the slice of the current token.
     fn slice(&self) -> &'source str;
 }
 
+/// A one token lexer that is intented to contain only one token.
 pub struct OneTokenLexer<'source> {
     source: &'source str,
     token: Token,
@@ -22,6 +32,7 @@ pub struct OneTokenLexer<'source> {
 }
 
 impl<'source> OneTokenLexer<'source> {
+    /// Creates a new one token lexer from source string and token.
     pub fn new(source: &'source str, token: Token) -> Self {
         Self {
             source,
