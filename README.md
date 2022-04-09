@@ -30,6 +30,7 @@ As this project is under active development, expect non backward compatible chan
 
 - [ ] Define command regexes in a config files (and maybe some can be hardcoded)
 - [ ] Recursively lex files that are given by \input commands
+- [ ] Use coroutines (Rust nightly) for recursive iterators 
 - [ ] Keep fileno reference inside lexers
 - [ ] Construct a list of file depedencies (\input, \includegraphics, ...)
 - [ ] Document functions
