@@ -27,7 +27,7 @@ impl<'source> Iterator for CharStream<'source> {
     fn next(&mut self) -> Option<Self::Item> {
         self.last_char = self.char_iter.next();
         match self.last_char {
-            Some((_, c)) if c == "\n" => self.lineno += 1,
+            Some((_, c)) if c == '\n' => self.lineno += 1,
             _ => (),
         }
 
