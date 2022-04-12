@@ -1,6 +1,7 @@
 #![warn(missing_docs)]
 
-use crate::lexer::{Lexer, RecursiveLexer, Token};
+use crate::lexer::{Lexer, RecursiveLexer};
+use crate::token::{Token, TokenType};
 use ansi_term::{Colour, Style};
 use regex::Regex;
 use std::fs::File;
@@ -12,6 +13,7 @@ pub fn explain_file(filename: &str, verbose: bool) {
     file.read_to_string(&mut contents).unwrap();
     let mut lex = RecursiveLexer::new(
         &contents,
+        Some(filename),
         vec![
             Regex::new(r"(^\\title\{)([\s\S]*)(\}$)").unwrap(),
             Regex::new(r"(^\\section\{)([\s\S]*)(\}$)").unwrap(),
@@ -35,22 +37,25 @@ pub fn explain_file(filename: &str, verbose: bool) {
     }
 
     loop {
-        match lex.next() {
-            Some(Token::Text) => {
+        let next = lex.next();
+
+        match next.ttype {
+            Some(TokenType::Text) => {
                 print!("{}", text_style.paint(lex.slice()));
             }
-            Some(Token::Linebreak) => {
+            Some(TokenType::Linebreak) => {
                 print!("{}", linebreak_style.paint(lex.slice()));
             }
-            Some(Token::Command) => {
+            Some(TokenType::Command) => {
                 print!("{}", command_style.paint(lex.slice()));
             }
-            Some(Token::Comment) => {
+            Some(TokenType::Comment) => {
                 print!("{}", comment_style.paint(lex.slice()));
             }
-            Some(Token::Error) => {
+            Some(TokenType::Error) => {
                 print!("{}", error_style.paint(lex.slice()));
             }
+            Some(TokenType::Math) => break,
             None => break,
         }
     }
