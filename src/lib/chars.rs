@@ -1,7 +1,7 @@
 use std::str::CharIndices;
 
 /// A char stream similar to CharIndices but
-/// that automatically counts the line number.
+/// that automatically increments the line count.
 #[derive(Debug, Clone)]
 pub struct CharStream<'source> {
     pub source: &'source str,

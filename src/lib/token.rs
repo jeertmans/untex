@@ -33,18 +33,30 @@ impl<'source> Token<'source> {
 }
 
 ///
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct TokenStream<'source> {
-    char_stream: &'source CharStream<'source>,
+    char_stream: &'source mut CharStream<'source>,
     start: usize,
+    current_token_kind: TokenKind,
 }
 
 impl<'source> TokenStream<'source> {
-    pub fn new(char_stream: &'source CharStream<'source>) -> Self {
+    pub fn new(char_stream: &'source mut CharStream<'source>) -> Self {
         Self {
             char_stream,
             start: 0,
+            current_token_kind: TokenKind::Error,
         }
+    }
+
+    #[inline]
+    fn lineno(&self) -> usize {
+        self.char_stream.lineno
+    }
+
+    #[inline]
+    fn current_kind(&self) -> TokenKind {
+        TokenKind::Command
     }
 
     #[inline]
@@ -68,7 +80,6 @@ impl<'source> TokenStream<'source> {
 
     #[inline]
     fn slice(&self, start: usize, end: usize) -> &'source str {
-        //self.char_stream.source[start..end]
         &self.char_stream.source[start..end]
     }
 
@@ -82,33 +93,8 @@ impl<'source> TokenStream<'source> {
     }
 
     #[inline]
-    fn comment_token(&self) -> Token<'source> {
-        Token::new(self.current_slice(), TokenKind::Comment)
-    }
-
-    #[inline]
-    fn command_token(&self) -> Token<'source> {
-        Token::new(self.current_slice(), TokenKind::Command)
-    }
-
-    #[inline]
-    fn linebreak_token(&self) -> Token<'source> {
-        Token::new(self.current_slice(), TokenKind::Linebreak)
-    }
-
-    #[inline]
-    fn math_token(&self) -> Token<'source> {
-        Token::new(self.current_slice(), TokenKind::Math)
-    }
-
-    #[inline]
-    fn text_token(&self) -> Token<'source> {
-        Token::new(self.current_slice(), TokenKind::Text)
-    }
-
-    #[inline]
-    fn error_token(&self) -> Token<'source> {
-        Token::new(self.current_slice(), TokenKind::Error)
+    fn current_token(&self) -> Token<'source> {
+        Token::new(self.current_slice(), self.current_token_kind.clone())
     }
 }
 
@@ -125,37 +111,43 @@ impl<'source> Iterator for TokenStream<'source> {
                         // A linebreak is ended by anything that is not as space, a tabulate or a carriage return
                         loop {
                             match self.next_char() {
-                                Some((i, c)) if c == ' ' || c == '\r' || c == '\t' => continue,
+                                Some((_, c)) if c == ' ' || c == '\r' || c == '\t' => continue,
                                 _ => break,
                             }
                         }
-                        Some(self.linebreak_token())
+                        self.current_token_kind = TokenKind::Linebreak;
+                        Some(self.current_token())
                     }
                     '%' => {
                         // A comment is ended by a linebreak
                         loop {
                             match self.next_char() {
-                                Some((i, c)) if c == '\n' => break,
+                                Some((_, c)) if c == '\n' => break,
                                 _ => continue,
                             }
                         }
-                        Some(self.command_token())
+                        self.current_token_kind = TokenKind::Comment;
+                        Some(self.current_token())
                     }
                     '\\' => {
                         // A command is quite complicated...
+                        self.current_token_kind = TokenKind::Command;
 
                         match self.next_char() {
-                            None => Some(self.error_token()),
+                            None => {
+                                self.current_token_kind = TokenKind::Error;
+                                Some(self.current_token())
+                            }
                             Some((_, c)) => match c {
                                 'a'..='z' | 'A'..='Z' => {
                                     // First we read the command name
                                     loop {
                                         match self.next_char() {
-                                            None => return Some(self.command_token()), // It was last character
+                                            None => return Some(self.current_token()), // It was last character
                                             Some((_, c)) => match c {
                                                 'a'..='z' | 'A'..='Z' => continue,
                                                 '{' | '[' => break,
-                                                _ => return Some(self.command_token()), // Anything else after the name ends the command
+                                                _ => return Some(self.current_token()), // Anything else after the name ends the command
                                             },
                                         }
                                     }
@@ -193,7 +185,8 @@ impl<'source> Iterator for TokenStream<'source> {
                                                 }
 
                                                 if level != 0 {
-                                                    return Some(self.error_token());
+                                                    self.current_token_kind = TokenKind::Error;
+                                                    return Some(self.current_token());
                                                 }
 
                                                 if self.next_char().is_none() {
@@ -203,27 +196,71 @@ impl<'source> Iterator for TokenStream<'source> {
                                             _ => break,
                                         }
                                     }
-                                    Some(self.command_token())
+                                    Some(self.current_token())
                                 }
                                 _ => {
                                     // '\' is just used tp escape character
                                     self.next_char();
                                     self.next_char();
-                                    Some(self.command_token())
+                                    Some(self.current_token())
                                 }
                             },
                         }
+                    }
+                    '$' => {
+                        // A math escaped env is either surrounded by one or two dollar signs
+                        self.current_token_kind = TokenKind::Math;
+
+                        match self.next_char() {
+                            None => {
+                                self.current_token_kind = TokenKind::Error;
+                                return Some(self.current_token());
+                            }
+                            Some((_, c)) => {
+                                // Lookin for next dollar sign
+                                loop {
+                                    match self.next_char() {
+                                        Some((_, ch)) if ch == '$' => {
+                                            self.next_char();
+                                            break;
+                                        }
+                                        None => {
+                                            self.current_token_kind = TokenKind::Error;
+                                            return Some(self.current_token());
+                                        }
+                                        _ => continue,
+                                    }
+                                }
+
+                                // Need double dollars
+                                if c == '$' {
+                                    match self.current_char() {
+                                        Some((_, ch)) if ch == '$' => {
+                                            self.next_char();
+                                        }
+                                        _ => {
+                                            self.current_token_kind = TokenKind::Error;
+                                            return Some(self.current_token());
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        Some(self.current_token())
                     }
                     _ => {
                         // A text is ended by any other starting token (Comment, ...)
                         loop {
                             match self.next_char() {
                                 None => break,
-                                Some((_, c)) if c == '\n' || c == '%' || c == '\\' => break,
+                                Some((_, c)) if c == '\n' || c == '%' || c == '\\' || c == '$' => {
+                                    break
+                                }
                                 _ => continue,
                             }
                         }
-                        Some(self.text_token())
+                        self.current_token_kind = TokenKind::Text;
+                        Some(self.current_token())
                     }
                 }
             }
