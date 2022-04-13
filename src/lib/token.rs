@@ -32,16 +32,16 @@ impl<'source> Token<'source> {
     }
 }
 
-///
+/// TODO
 #[derive(Debug)]
 pub struct TokenStream<'source> {
-    char_stream: &'source mut CharStream<'source>,
+    char_stream: CharStream<'source>,
     start: usize,
     current_token_kind: TokenKind,
 }
 
 impl<'source> TokenStream<'source> {
-    pub fn new(char_stream: &'source mut CharStream<'source>) -> Self {
+    pub fn new(char_stream: CharStream<'source>) -> Self {
         Self {
             char_stream,
             start: 0,
@@ -95,6 +95,12 @@ impl<'source> TokenStream<'source> {
     #[inline]
     fn current_token(&self) -> Token<'source> {
         Token::new(self.current_slice(), self.current_token_kind.clone())
+    }
+}
+
+impl<'source> From<CharStream<'source>> for TokenStream<'source> {
+    fn from(char_stream: CharStream<'source>) -> TokenStream<'source> {
+        TokenStream::new(char_stream)
     }
 }
 
