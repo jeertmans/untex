@@ -1,3 +1,4 @@
+use untex::deps::file_deps;
 use untex::explain::explain_file;
 
 use clap::{Arg, Command};
@@ -26,6 +27,16 @@ pub fn main() {
                 .help("Use verbose output")
                 ),
         )
+        .subcommand(
+            Command::new("deps")
+            .about("Give an internal explanation of a file. Useful to see how UnTeX understands TeX files")
+            .arg(
+                Arg::new("FILE")
+                    .help("Set the input file to use")
+                    .required(true)
+                    .index(1),
+            )
+        )
         .get_matches();
 
     match matches.subcommand() {
@@ -33,6 +44,10 @@ pub fn main() {
             let filename = sub_matches.value_of("FILE").unwrap();
             let verbose = sub_matches.is_present("verbose");
             explain_file(filename, verbose);
+        }
+        Some(("deps", sub_matches)) => {
+            let filename = sub_matches.value_of("FILE").unwrap();
+            file_deps(filename);
         }
         _ => unreachable!(),
     }
