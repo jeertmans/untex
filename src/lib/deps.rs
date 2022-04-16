@@ -14,6 +14,8 @@ lazy_static! {
     static ref RE_IMAGE: Regex = Regex::new(r"\\includegraphics(?:\[.*\])\{([^\}]*)\}").unwrap();
     static ref RE_BIBLI: Regex = Regex::new(r"\\bibliography\{([^\}]*)\}").unwrap();
     static ref RE_TABLE: Regex = Regex::new(r"\{([^\}]*\.txt)\}").unwrap();
+    static ref RE_LISTI: Regex = Regex::new(r"\\lstinputlisting(?:\[.*\])\{([^\}]*)\}").unwrap();
+    static ref RE_MINTD: Regex = Regex::new(r"\\inputminted(?:\{.*\})\{([^\}]*)\}").unwrap();
 }
 
 trait PathUtils {
@@ -92,6 +94,14 @@ impl<'source> Dependency<'source> {
                         } else if let Some(caps) = RE_BIBLI.captures(token.slice) {
                             let dep_filename =
                                 PathBuf::from(&caps[1]).with_default_extension("bib");
+                            dependencies.push(Dependency::new(dep_filename, main_dir));
+                        } else if let Some(caps) = RE_LISTI.captures(token.slice) {
+                            let dep_filename =
+                                PathBuf::from(&caps[1]).with_default_extension("txt");
+                            dependencies.push(Dependency::new(dep_filename, main_dir));
+                        } else if let Some(caps) = RE_MINTD.captures(token.slice) {
+                            let dep_filename =
+                                PathBuf::from(&caps[1]).with_default_extension("txt");
                             dependencies.push(Dependency::new(dep_filename, main_dir));
                         }
                     } else if token.kind == TokenKind::Text {
