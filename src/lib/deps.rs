@@ -1,9 +1,12 @@
 use crate::chars::CharStream;
 use crate::token::{TokenKind, TokenStream};
 use lazy_static::lazy_static;
+use ptree::{Style, TreeItem};
 use regex::Regex;
+use std::borrow::Cow;
 use std::fs::read_to_string;
 use std::path::{Path, PathBuf};
+use std::io;
 
 lazy_static! {
     static ref RE_INPUT: Regex = Regex::new(r"\\input\{(.*)\}").unwrap();
@@ -103,23 +106,22 @@ impl<'source> Dependency<'source> {
     }
 }
 
-fn write_deps(dep: &Dependency, depth: usize) {
-    for sub_dep in dep.dependencies.iter() {
-        print!("{:<1$}|->", "", depth);
-        println!("{:?}", sub_dep.filename);
-        write_deps(sub_dep, depth + 2);
+impl<'source> TreeItem for Dependency<'source> {
+    type Child = Self;
+
+    fn write_self<W: io::Write>(&self, f: &mut W, style: &Style) -> io::Result<()> {
+        write!(f, "{}", style.paint(self.filename.to_string_lossy()))
+    }
+
+    fn children(&self) -> Cow<[Self::Child]> {
+        Cow::from(self.dependencies.clone())
     }
 }
 
 pub fn file_deps(filename: &str) {
     let filename = PathBuf::from(filename);
     let main_dir = filename.parent().unwrap().into();
-    let main_dep = Dependency::new(filename.clone(), &main_dir);
+    let main_dep = Dependency::new(filename, &main_dir);
 
-    if main_dep.dependencies.len() == 0 {
-        println!("Depedencies of {}: none.", filename.to_string_lossy());
-    } else {
-        println!("Depedencies of {}:", filename.to_string_lossy());
-        write_deps(&main_dep, 0);
-    }
+    ptree::print_tree(&main_dep).expect("Unable to print dependencies tree");
 }
