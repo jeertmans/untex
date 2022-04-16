@@ -5,8 +5,8 @@ use ptree::{Style, TreeItem};
 use regex::Regex;
 use std::borrow::Cow;
 use std::fs::read_to_string;
-use std::path::{Path, PathBuf};
 use std::io;
+use std::path::{Path, PathBuf};
 
 lazy_static! {
     static ref RE_INPUT: Regex = Regex::new(r"\\input\{(.*)\}").unwrap();
