@@ -5,6 +5,7 @@ use lazy_static::lazy_static;
 use ptree::{Style, TreeItem};
 use regex::Regex;
 use std::borrow::Cow;
+use std::fmt;
 use std::fs::read_to_string;
 use std::io;
 use std::path::{Path, PathBuf};
@@ -20,7 +21,7 @@ lazy_static! {
 
 trait PathUtils {
     fn with_default_extension(self, ext: &str) -> PathBuf;
-    fn with_main_dir(&self, main_dir: &PathBuf) -> PathBuf;
+    fn with_main_dir(&self, main_dir: &Path) -> PathBuf;
 }
 
 impl PathUtils for PathBuf {
@@ -30,7 +31,7 @@ impl PathUtils for PathBuf {
         }
         self
     }
-    fn with_main_dir(&self, main_dir: &PathBuf) -> PathBuf {
+    fn with_main_dir(&self, main_dir: &Path) -> PathBuf {
         if self.is_relative() && !self.starts_with(main_dir) {
             main_dir.join(self)
         } else {
@@ -46,12 +47,12 @@ enum DependencyKind {
     Other = 3,
 }
 
-impl DependencyKind {
-    fn to_string(&self) -> String {
+impl fmt::Display for DependencyKind {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Self::TeX => "TeX".to_string(),
-            Self::Image => "Image".to_string(),
-            Self::Other => "Other".to_string(),
+            Self::TeX => write!(f, "TeX"),
+            Self::Image => write!(f, "Image"),
+            Self::Other => write!(f, "Other"),
         }
     }
 }
@@ -65,7 +66,7 @@ pub struct Dependency<'source> {
 }
 
 impl<'source> Dependency<'source> {
-    pub fn new(filename: PathBuf, main_dir: &'source PathBuf) -> Self {
+    pub fn new(filename: PathBuf, main_dir: &'source Path) -> Self {
         let mut dependencies = Vec::<Dependency>::new();
 
         let kind = match filename
@@ -211,7 +212,7 @@ impl<'source> TreeItem for GroupedDependency<'source> {
 
 pub fn file_deps(filename: &str) {
     let filename = PathBuf::from(filename);
-    let main_dir = filename.parent().unwrap().into();
+    let main_dir: PathBuf = filename.parent().unwrap().into();
     let main_dep = Dependency::new(filename, &main_dir);
     let main_dep: GroupedDependency = main_dep.into();
 
