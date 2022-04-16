@@ -1,12 +1,13 @@
 use crate::chars::CharStream;
 use crate::token::{TokenKind, TokenStream};
+use itertools::Itertools;
 use lazy_static::lazy_static;
 use ptree::{Style, TreeItem};
 use regex::Regex;
 use std::borrow::Cow;
 use std::fs::read_to_string;
-use std::path::{Path, PathBuf};
 use std::io;
+use std::path::{Path, PathBuf};
 
 lazy_static! {
     static ref RE_INPUT: Regex = Regex::new(r"\\input\{(.*)\}").unwrap();
@@ -36,15 +37,25 @@ impl PathUtils for PathBuf {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 enum DependencyKind {
-    TeX,
-    Image,
-    Other,
+    TeX = 1,
+    Image = 2,
+    Other = 3,
+}
+
+impl DependencyKind {
+    fn to_string(&self) -> String {
+        match self {
+            Self::TeX => "TeX".to_string(),
+            Self::Image => "Image".to_string(),
+            Self::Other => "Other".to_string(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
-struct Dependency<'source> {
+pub struct Dependency<'source> {
     filename: PathBuf,
     main_dir: &'source Path,
     dependencies: Vec<Self>,
@@ -118,10 +129,81 @@ impl<'source> TreeItem for Dependency<'source> {
     }
 }
 
+#[derive(Clone, Debug, PartialEq)]
+struct GroupedDependency<'source> {
+    filename: Option<PathBuf>,
+    main_dir: Option<&'source Path>,
+    dependencies: Vec<Self>,
+    kind: DependencyKind,
+    prefix: Option<String>,
+}
+
+impl<'source> From<Dependency<'source>> for GroupedDependency<'source> {
+    fn from(dependency: Dependency<'source>) -> Self {
+        Self {
+            filename: Some(dependency.filename),
+            main_dir: Some(dependency.main_dir),
+            dependencies: dependency
+                .dependencies
+                .into_iter()
+                .map_into::<Self>()
+                .collect(),
+            kind: dependency.kind,
+            prefix: None,
+        }
+    }
+}
+
+impl<'source> TreeItem for GroupedDependency<'source> {
+    type Child = Self;
+
+    fn write_self<W: io::Write>(&self, f: &mut W, style: &Style) -> io::Result<()> {
+        match &self.prefix {
+            None => write!(
+                f,
+                "{}",
+                style.paint(self.filename.as_ref().unwrap().to_string_lossy())
+            ),
+            Some(s) => write!(
+                f,
+                "{}",
+                Style {
+                    bold: true,
+                    ..style.clone()
+                }
+                .paint(&s)
+            ),
+        }
+    }
+
+    fn children(&self) -> Cow<[Self::Child]> {
+        match &self.prefix {
+            Some(_) => Cow::from(self.dependencies.clone()),
+            None => self
+                .dependencies
+                .clone()
+                .into_iter()
+                .sorted_by_key(|dep| dep.kind.clone())
+                .group_by(|dep| dep.kind.clone())
+                .into_iter()
+                .map(|(kind, group)| Self {
+                    filename: None,
+                    main_dir: None,
+                    dependencies: group.collect(),
+                    kind: kind.clone(),
+                    prefix: Some(kind.to_string()),
+                })
+                .collect_vec()
+                .into(),
+        }
+    }
+}
+
 pub fn file_deps(filename: &str) {
     let filename = PathBuf::from(filename);
     let main_dir = filename.parent().unwrap().into();
     let main_dep = Dependency::new(filename, &main_dir);
+    let main_dep: GroupedDependency = main_dep.into();
 
     ptree::print_tree(&main_dep).expect("Unable to print dependencies tree");
 }
