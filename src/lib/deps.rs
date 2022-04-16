@@ -9,9 +9,8 @@ lazy_static! {
     static ref RE_INPUT: Regex = Regex::new(r"\\input\{(.*)\}").unwrap();
     static ref RE_IMAGE: Regex = Regex::new(r"\\includegraphics(?:\[.*\])\{([^\}]*)\}").unwrap();
     static ref RE_BIBLI: Regex = Regex::new(r"\\bibliography\{([^\}]*)\}").unwrap();
-
+    static ref RE_TABLE: Regex = Regex::new(r"\{([^\}]*)\}").unwrap();
 }
-
 
 trait PathUtils {
     fn with_default_extension(self, ext: &str) -> PathBuf;
@@ -69,13 +68,22 @@ impl<'source> Dependency<'source> {
                 for token in token_stream {
                     if token.kind == TokenKind::Command {
                         if let Some(caps) = RE_INPUT.captures(token.slice) {
-                            let dep_filename = PathBuf::from(&caps[1]).with_default_extension("tex");
+                            let dep_filename =
+                                PathBuf::from(&caps[1]).with_default_extension("tex");
                             dependencies.push(Dependency::new(dep_filename, main_dir));
                         } else if let Some(caps) = RE_IMAGE.captures(token.slice) {
-                            let dep_filename = PathBuf::from(&caps[1]).with_default_extension("pdf");
+                            let dep_filename =
+                                PathBuf::from(&caps[1]).with_default_extension("pdf");
                             dependencies.push(Dependency::new(dep_filename, main_dir));
                         } else if let Some(caps) = RE_BIBLI.captures(token.slice) {
-                            let dep_filename = PathBuf::from(&caps[1]).with_default_extension("bib");
+                            let dep_filename =
+                                PathBuf::from(&caps[1]).with_default_extension("bib");
+                            dependencies.push(Dependency::new(dep_filename, main_dir));
+                        }
+                    } else if token.kind == TokenKind::Text {
+                        if let Some(caps) = RE_TABLE.captures(token.slice) {
+                            let dep_filename =
+                                PathBuf::from(&caps[1]).with_default_extension("txt");
                             dependencies.push(Dependency::new(dep_filename, main_dir));
                         }
                     }
@@ -104,10 +112,14 @@ fn write_deps(dep: &Dependency, depth: usize) {
 }
 
 pub fn file_deps(filename: &str) {
-    println!("Depedencies of {}:", filename);
     let filename = PathBuf::from(filename);
     let main_dir = filename.parent().unwrap().into();
     let main_dep = Dependency::new(filename.clone(), &main_dir);
 
-    write_deps(&main_dep, 0);
+    if main_dep.dependencies.len() == 0 {
+        println!("Depedencies of {}: none.", filename.to_string_lossy());
+    } else {
+        println!("Depedencies of {}:", filename.to_string_lossy());
+        write_deps(&main_dep, 0);
+    }
 }
