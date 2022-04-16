@@ -129,6 +129,7 @@ impl<'source> Iterator for TokenStream<'source> {
                         loop {
                             match self.next_char() {
                                 Some((_, c)) if c == '\n' => break,
+                                None => break,
                                 _ => continue,
                             }
                         }
