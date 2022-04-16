@@ -26,7 +26,7 @@ impl PathUtils for PathBuf {
         self
     }
     fn with_main_dir(&self, main_dir: &PathBuf) -> PathBuf {
-        if self.is_relative() {
+        if self.is_relative() && !self.starts_with(main_dir) {
             main_dir.join(self)
         } else {
             self.clone()
