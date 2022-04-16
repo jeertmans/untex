@@ -8,6 +8,8 @@ use std::path::{Path, PathBuf};
 lazy_static! {
     static ref RE_INPUT: Regex = Regex::new(r"\\input\{(.*)\}").unwrap();
     static ref RE_IMAGE: Regex = Regex::new(r"\\includegraphics(?:\[.*\])\{([^\}]*)\}").unwrap();
+    static ref RE_BIBLI: Regex = Regex::new(r"\\bibliography\{([^\}]*)\}").unwrap();
+
 }
 
 
@@ -71,6 +73,9 @@ impl<'source> Dependency<'source> {
                             dependencies.push(Dependency::new(dep_filename, main_dir));
                         } else if let Some(caps) = RE_IMAGE.captures(token.slice) {
                             let dep_filename = PathBuf::from(&caps[1]).with_default_extension("pdf");
+                            dependencies.push(Dependency::new(dep_filename, main_dir));
+                        } else if let Some(caps) = RE_BIBLI.captures(token.slice) {
+                            let dep_filename = PathBuf::from(&caps[1]).with_default_extension("bib");
                             dependencies.push(Dependency::new(dep_filename, main_dir));
                         }
                     }
