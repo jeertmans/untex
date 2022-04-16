@@ -9,7 +9,7 @@ lazy_static! {
     static ref RE_INPUT: Regex = Regex::new(r"\\input\{(.*)\}").unwrap();
     static ref RE_IMAGE: Regex = Regex::new(r"\\includegraphics(?:\[.*\])\{([^\}]*)\}").unwrap();
     static ref RE_BIBLI: Regex = Regex::new(r"\\bibliography\{([^\}]*)\}").unwrap();
-    static ref RE_TABLE: Regex = Regex::new(r"\{([^\}]*)\}").unwrap();
+    static ref RE_TABLE: Regex = Regex::new(r"\{([^\}]*\.txt)\}").unwrap();
 }
 
 trait PathUtils {
