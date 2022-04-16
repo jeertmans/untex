@@ -23,3 +23,4 @@ path = "src/bin.rs"
 ansi_term = "0.12.1"
 regex = "1"
 clap = { version = "3.1.8", features = ["derive"] }
+lazy_static = "1.4.0"
