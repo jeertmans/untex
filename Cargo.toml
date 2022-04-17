@@ -1,6 +1,6 @@
 [package]
 name = "untex"
-version = "0.2.0-alpha"
+version = "0.3.0"
 authors = ["Jérome Eertmans <jeertmans@icloud.com>"]
 edition = "2021"
 description = "Understand and manipulate TeX files with ease."
@@ -23,3 +23,6 @@ path = "src/bin.rs"
 ansi_term = "0.12.1"
 regex = "1"
 clap = { version = "3.1.8", features = ["derive"] }
+lazy_static = "1.4.0"
+ptree = "0.4.0"
+itertools = "0.10.3"

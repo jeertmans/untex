@@ -1,0 +1,10 @@
+\documentclass[border=1]{article}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.5}
+\begin{document}
+\begin{tikzpicture}
+    \begin{axis}
+            \addplot table [x expr=\coordindex+1, y index=0] {TestTable.txt};
+     \end{axis}
+\end{tikzpicture}
+\end{document}
