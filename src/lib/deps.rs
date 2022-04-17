@@ -2,7 +2,7 @@ use crate::chars::CharStream;
 use crate::token::{TokenKind, TokenStream};
 use itertools::Itertools;
 use lazy_static::lazy_static;
-use ptree::{Style, TreeItem};
+use ptree::{PrintConfig, Style, TreeItem};
 use regex::Regex;
 use std::borrow::Cow;
 use std::fmt;
@@ -71,14 +71,14 @@ impl<'source> Dependency<'source> {
 
         let kind = match filename
             .extension()
-            .expect(&format!("filename `{:?}` has no extension", filename))
+            .unwrap_or_else(|| panic!("filename `{:?}` has no extension", filename))
             .to_str()
             .unwrap()
         {
             "tex" => {
                 let filepath = filename.with_main_dir(main_dir);
-                let contents =
-                    read_to_string(&filepath).expect(&format!("Could not read {:?}", filepath));
+                let contents = read_to_string(&filepath)
+                    .unwrap_or_else(|_| panic!("Could not read {:?}", filepath));
 
                 let token_stream: TokenStream = CharStream::new(&contents).into();
 
@@ -210,11 +210,14 @@ impl<'source> TreeItem for GroupedDependency<'source> {
     }
 }
 
-pub fn file_deps(filename: &str) {
+pub fn write_file_deps<W: io::Write>(filename: &str, writer: W, grouped: bool) -> io::Result<()> {
     let filename = PathBuf::from(filename);
     let main_dir: PathBuf = filename.parent().unwrap().into();
     let main_dep = Dependency::new(filename, &main_dir);
-    let main_dep: GroupedDependency = main_dep.into();
 
-    ptree::print_tree(&main_dep).expect("Unable to print dependencies tree");
+    if grouped {
+        ptree::write_tree(&GroupedDependency::from(main_dep), writer)
+    } else {
+        ptree::write_tree(&main_dep, writer)
+    }
 }
