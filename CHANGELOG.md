@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2022-04-17
+
+### Bug Fixes
+
+- Fix version for install guidelines
+- Typo in char
+- Infinite loop that never exits
+- Avoid prefix duplication with join
+- Avoid matching things that are not files
+
+### Features
+
+- Lexer refactoring (WIP)
+- TokenStream now handling Math mode
+- CharStream impl. into TokenStream
+- Now showing file deps (WIP)
+- Nicer formatting for deps
+- Now supporting bib files
+- Basic search for data files
+- Pretty print tree of deps
+- Prettier deps formatting
+- Now supporting listing and minted input
+- Now accepting file as output redirection
+
+### Miscellaneous Tasks
+
+- Updated README and version
+
+### Misc
+
+- Applying clippy's recommendations
+
 ## [0.2.0-alpha] - 2022-04-06
 
 ### Bug Fixes
@@ -22,6 +54,7 @@ All notable changes to this project will be documented in this file.
 - Remove unused crate logos
 - Warn of missing docs
 - Update version
+- Update changelog
 
 ## [0.1.0-alpha] - 2022-04-04
 
