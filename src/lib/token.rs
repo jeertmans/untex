@@ -1,6 +1,9 @@
 #![warn(missing_docs)]
 
 use crate::CharStream;
+use ansi_term::{Colour, Style};
+use lazy_static::lazy_static;
+use std::fmt;
 
 /// Enumerates all the possible atoms that can be found in a TeX file.
 #[derive(Debug, PartialEq, Clone)]
@@ -19,6 +22,15 @@ pub enum TokenKind {
     Error, // Syntax error
 }
 
+lazy_static! {
+    pub static ref text_style: Style = Style::new();
+    pub static ref linebreak_style: Style = Style::new().on(Colour::Red);
+    pub static ref command_style: Colour = Colour::Blue;
+    pub static ref comment_style: Colour = Colour::Green;
+    pub static ref error_style: Style = Colour::Red.bold();
+    pub static ref math_style: Style = Colour::Green.bold();
+}
+
 /// A Token is ... TODO
 #[derive(PartialEq, Clone, Debug)]
 pub struct Token<'source> {
@@ -29,6 +41,19 @@ pub struct Token<'source> {
 impl<'source> Token<'source> {
     pub fn new(slice: &'source str, kind: TokenKind) -> Self {
         Self { slice, kind }
+    }
+}
+
+impl<'source> fmt::Display for Token<'source> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self.kind {
+            TokenKind::Comment => write!(f, "{}", comment_style.paint(self.slice)),
+            TokenKind::Linebreak => write!(f, "{}", linebreak_style.paint(self.slice)),
+            TokenKind::Command => write!(f, "{}", command_style.paint(self.slice)),
+            TokenKind::Math => write!(f, "{}", math_style.paint(self.slice)),
+            TokenKind::Text => write!(f, "{}", text_style.paint(self.slice)),
+            TokenKind::Error => write!(f, "{}", error_style.paint(self.slice)),
+        }
     }
 }
 

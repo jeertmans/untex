@@ -2,7 +2,7 @@ use crate::chars::CharStream;
 use crate::token::{TokenKind, TokenStream};
 use itertools::Itertools;
 use lazy_static::lazy_static;
-use ptree::{PrintConfig, Style, TreeItem};
+use ptree::{Style, TreeItem};
 use regex::Regex;
 use std::borrow::Cow;
 use std::fmt;
@@ -11,12 +11,18 @@ use std::io;
 use std::path::{Path, PathBuf};
 
 lazy_static! {
-    static ref RE_INPUT: Regex = Regex::new(r"\\input\{(.*)\}").unwrap();
-    static ref RE_IMAGE: Regex = Regex::new(r"\\includegraphics(?:\[.*\])\{([^\}]*)\}").unwrap();
-    static ref RE_BIBLI: Regex = Regex::new(r"\\bibliography\{([^\}]*)\}").unwrap();
-    static ref RE_TABLE: Regex = Regex::new(r"\{([^\}]*\.txt)\}").unwrap();
-    static ref RE_LISTI: Regex = Regex::new(r"\\lstinputlisting(?:\[.*\])\{([^\}]*)\}").unwrap();
-    static ref RE_MINTD: Regex = Regex::new(r"\\inputminted(?:\{.*\})\{([^\}]*)\}").unwrap();
+    /// Regex that matches \input{some_tex_file} and captures the file
+    pub static ref RE_INPUT: Regex = Regex::new(r"\\input\{(.*)\}").unwrap();
+    /// Regex that matches \includegraphics[opts]{some_image_file} and captures the file
+    pub static ref RE_IMAGE: Regex = Regex::new(r"\\includegraphics(?:\[.*\])\{([^\}]*)\}").unwrap();
+    /// Regex that matches \bibliography{some_bib_file} and captures the file
+    pub static ref RE_BIBLI: Regex = Regex::new(r"\\bibliography\{([^\}]*)\}").unwrap();
+    /// Regex that matches {some_txt_file} and captures the file
+    pub static ref RE_TABLE: Regex = Regex::new(r"\{([^\}]*\.txt)\}").unwrap();
+    /// Regex that matches \lstinputlisting[opts]{some_code_file} and captures the file
+    pub static ref RE_LISTI: Regex = Regex::new(r"\\lstinputlisting(?:\[.*\])\{([^\}]*)\}").unwrap();
+    /// Regex that matches \inputminted{opts}{some_code_file} and captures the file
+    pub static ref RE_MINTD: Regex = Regex::new(r"\\inputminted(?:\{.*\})\{([^\}]*)\}").unwrap();
 }
 
 trait PathUtils {

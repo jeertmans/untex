@@ -1,7 +1,7 @@
 use std::fs;
 use std::io;
 use untex::deps::write_file_deps;
-//use untex::explain::explain_file;
+use untex::explain::write_file_explanation;
 
 use clap::{Arg, Command};
 
@@ -27,7 +27,7 @@ impl io::Write for Writer {
 
 pub fn main() {
     let matches = Command::new("UnTeX")
-        .version("0.2.0-alpha")
+        .version("0.3.0")
         .author("Jérome Eertmans <jeertmans@icloud.com>")
         .about("Understand and manipulate TeX files.")
         .arg(
@@ -84,7 +84,7 @@ pub fn main() {
         Some(("explain", sub_matches)) => {
             let filename = sub_matches.value_of("FILE").unwrap();
             let verbose = sub_matches.is_present("verbose");
-            //explain_file(filename, verbose);
+            write_file_explanation(filename, writer, verbose).unwrap();
         }
         Some(("deps", sub_matches)) => {
             let filename = sub_matches.value_of("FILE").unwrap();

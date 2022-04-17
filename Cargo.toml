@@ -1,6 +1,6 @@
 [package]
 name = "untex"
-version = "0.2.0-alpha"
+version = "0.3.0"
 authors = ["Jérome Eertmans <jeertmans@icloud.com>"]
 edition = "2021"
 description = "Understand and manipulate TeX files with ease."
