@@ -3,6 +3,7 @@
 pub mod chars;
 pub mod explain;
 //pub mod lexer;
+pub mod check;
 pub mod deps;
 pub mod token;
 

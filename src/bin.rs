@@ -1,5 +1,6 @@
 use std::fs;
 use std::io;
+use untex::check::check_file;
 use untex::deps::write_file_deps;
 use untex::explain::write_file_explanation;
 
@@ -73,6 +74,24 @@ pub fn main() {
                 ),
 
         )
+        .subcommand(
+            Command::new("check")
+            .about("Check that current file does not contain any error token")
+            .arg(
+                Arg::new("FILE")
+                    .help("Set the input file to use")
+                    .required(true)
+                    .index(1),
+            )
+            .arg(
+                Arg::new("recusirve")
+                .short('r')
+                .long("recursive")
+                .takes_value(false)
+                .help("Recursively check TeX files")
+                ),
+
+        )
         .get_matches();
 
     let writer = match matches.value_of("output") {
@@ -90,6 +109,11 @@ pub fn main() {
             let filename = sub_matches.value_of("FILE").unwrap();
             let grouped = sub_matches.is_present("grouped");
             write_file_deps(filename, writer, grouped).unwrap()
+        }
+        Some(("check", sub_matches)) => {
+            let filename = sub_matches.value_of("FILE").unwrap();
+            let recursive = sub_matches.is_present("grouped");
+            check_file(filename, writer, recursive).unwrap()
         }
         _ => unreachable!(),
     }

@@ -25,7 +25,7 @@ lazy_static! {
     pub static ref RE_MINTD: Regex = Regex::new(r"\\inputminted(?:\{.*\})\{([^\}]*)\}").unwrap();
 }
 
-trait PathUtils {
+pub trait PathUtils {
     fn with_default_extension(self, ext: &str) -> PathBuf;
     fn with_main_dir(&self, main_dir: &Path) -> PathBuf;
 }
