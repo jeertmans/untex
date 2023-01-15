@@ -20,9 +20,5 @@ path = "src/bin.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-ansi_term = "0.12.1"
-regex = "1"
-clap = { version = "3.1.8", features = ["derive"] }
-lazy_static = "1.4.0"
-ptree = "0.4.0"
-itertools = "0.10.3"
+logos = "0.12.1"
+thiserror = "1.0.38"
