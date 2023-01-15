@@ -70,7 +70,6 @@ impl TryFromTokens for Preamble {
     }
 }
 
-
 struct Document {}
 
 impl TryFromTokens for Document {
@@ -117,13 +116,9 @@ impl TryFromTokens for Document {
     }
 }
 
-struct Options<'source> {
+struct Options<'source> {}
 
-}
-
-struct Arguments<'source> {
-
-}
+struct Arguments<'source> {}
 
 struct Environment<'source> {
     name: &'source str,
