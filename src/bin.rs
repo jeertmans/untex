@@ -1,19 +1,18 @@
 use logos::Logos;
 //use untex::parse::{LaTeXDocument, TryFromTokens};
-use untex::token::Token;
 use clap::Parser;
+use untex::token::Token;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about)]
 struct Args {
-   /// Name of the person to greet
-   #[arg(required(true), num_args(1..))]
-   filenames: Vec<String>,
+    /// Name of the person to greet
+    #[arg(required(true), num_args(1..))]
+    filenames: Vec<String>,
 
-   #[arg(long, action = clap::ArgAction::SetTrue)]
-   follow_includes: bool,
+    #[arg(long, action = clap::ArgAction::SetTrue)]
+    follow_includes: bool,
 }
-
 
 pub fn main() {
     let args = Args::parse();

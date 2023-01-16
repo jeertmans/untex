@@ -120,7 +120,6 @@ impl TryFromTokens for Document {
     }
 }
 
-
 struct Options<'source> {
     s: &'source str,
 }
