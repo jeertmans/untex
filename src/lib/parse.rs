@@ -1,5 +1,6 @@
 use crate::error::Result;
 use crate::token::Token;
+use itertools::Itertools;
 use logos::Lexer;
 use std::iter::Peekable;
 
@@ -61,7 +62,8 @@ impl TryFromTokens for Preamble {
 
         while let Some((token, _span)) = iter.peek() {
             match token {
-                Token::DocumentBegin => return Ok(Self {}),
+                // If \begin is found, we assumed it is \begin{document}
+                Token::EnvironmentBegin => return Ok(Self {}),
                 _ => (),
             }
             iter.next();
@@ -82,19 +84,21 @@ impl TryFromTokens for Document {
         });
 
         match iter
-            .next()
+            .next_tuple()
             .expect("Document should start with a \\begin{{document}}, but nothing was found")
         {
-            (Token::DocumentBegin, _) => (),
-            (token, span) => panic!(
-                "Document should start with a \\begin{{document}}, not with {:#?}: {}",
-                token, &source[span]
-            ),
+            (
+                (Token::EnvironmentBegin, _),
+                (Token::BraceOpen, _),
+                (Token::Word, word_span),
+                (Token::BraceClose, _),
+            ) if &source[word_span.clone()] == "document" => (),
+            _ => panic!("Document should start with a \\begin{{document}}"),
         }
 
         while let Some((token, span)) = iter.next() {
             match token {
-                Token::DocumentEnd => {
+                Token::EnvironmentEnd => {
                     if let Some((token, span)) = iter
                         .skip_while(|(token, _)| {
                             matches!(token, Token::Comment | Token::Newline | Token::TabsOrSpaces)
@@ -116,13 +120,25 @@ impl TryFromTokens for Document {
     }
 }
 
-struct Options<'source> {}
 
-struct Arguments<'source> {}
+struct Options<'source> {
+    s: &'source str,
+}
 
-struct Environment<'source> {
+struct Arguments<'source> {
+    s: &'source str,
+}
+
+struct Command<'source> {
     name: &'source str,
     opts: Options<'source>,
     args: Arguments<'source>,
+    span: Span,
+}
+
+struct Environment<'source> {
+    name: &'source str,
+    opts: Option<Options<'source>>,
+    args: Option<Arguments<'source>>,
     span: Span,
 }
