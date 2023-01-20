@@ -1,6 +1,9 @@
 //! Category Codes
 //!
-//! This module provides tools to work category codes.
+//! This module provides tools to work category codes, see [`CategoryCode`].
+//!
+//! Since TeX is limited to ASCII characters (by default), functions defined
+//! here are working with bytes (slice of [`u8`]) instead of [`str`].
 
 use logos::Logos;
 
