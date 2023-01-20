@@ -6,13 +6,13 @@ use logos::Logos;
 
 #[derive(Debug, Logos)]
 /// Category codes, as defined in TeX by Topic (section 2.3).
-/// 
+///
 /// > Each of the 256 character codes (0–255) has an associated category code, though not necessarily
 /// always the same one. There are 16 categories, numbered 0–15. When scanning the input, TEX thus
 /// forms character-code–category-code pairs. The input processor sees only these pairs; from them
 /// are formed character tokens, control sequence tokens, and parameter tokens. These tokens are then passed to TEX’s expansion and execution processes.
 /// >
-/// > A character token is a character-code–category-code pair that is passed unchanged. 
+/// > A character token is a character-code–category-code pair that is passed unchanged.
 /// A control sequence token consists of one or more characters preceded by an escape character;
 /// see below. Parameter tokens are also explained below.
 ///
@@ -39,7 +39,7 @@ pub enum CategoryCode {
     ///  Plain TEX uses the dollar sign $ for this.
     #[token("$")]
     MathShift = 3,
-    ///  Alignment tab; the column (row) separator in tables made with \halign (\valign). 
+    ///  Alignment tab; the column (row) separator in tables made with \halign (\valign).
     ///
     ///  In plain TEX this is the ampersand &.
     #[token("&")]
@@ -87,7 +87,7 @@ pub enum CategoryCode {
     /// Thus it includes, for instance, digits and punctuation.
     #[error]
     Other = 12,
-    ///  Active; active characters function as a TEX command, without being preceded by 
+    ///  Active; active characters function as a TEX command, without being preceded by
     ///  an escape character.
     ///
     ///  In plain TEX this is only the tie character ~, which is defined to produce an
