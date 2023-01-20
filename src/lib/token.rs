@@ -10,29 +10,32 @@ pub enum Token {
     #[token("*")]
     Asterix,
 
+    #[token("@")]
+    At,
+
+    //#[token(r"\")]
+    Backslash,
+
     #[token("{")]
     BraceOpen,
 
     #[token("}")]
     BraceClose,
 
-    #[token(r"\")]
-    Backslash,
+    #[token("]")]
+    BracketClose,
 
     #[token("[")]
     BracketOpen,
 
-    #[token("]")]
-    BracketClose,
-
     #[regex("%.*")]
     Comment,
 
-    #[token(r"\[")]
-    DisplayMathOpen,
-
     #[token(r"\]")]
     DisplayMathClose,
+
+    #[token(r"\[")]
+    DisplayMathOpen,
 
     #[token(r"\documentclass")]
     DocumentClass,
@@ -61,17 +64,20 @@ pub enum Token {
     #[token(r"\end")]
     EnvironmentEnd,
 
+    #[token(r"\begin{document}")]
+    Test,
+
     #[token("#")]
     Hash,
 
     #[token("^")]
     Hat,
 
-    #[token(r"\(")]
-    InlineMathOpen,
-
     #[token(r"\)")]
     InlineMathClose,
+
+    #[token(r"\(")]
+    InlineMathOpen,
 
     #[token(r"\,")]
     #[token(r"\:")]
@@ -82,6 +88,9 @@ pub enum Token {
 
     #[regex(r"\\[a-zA-Z]+")]
     MacroName,
+
+    #[regex(r"\\[^a-zA-Z]")]
+    InvalidBackslash,
 
     #[token("\n")]
     #[token("\r\n")]
@@ -153,13 +162,17 @@ mod tests {
     }
 
     #[test]
-    fn token_backslash() {
-        assert_token_positions!(r"Should match \+, but not \\+", Token::Backslash, 13..14,);
+    fn token_at() {
+        assert_token_positions!(r"Should match @, but not \@", Token::At, 13..14,);
     }
 
     #[test]
-    fn token_brace_open() {
-        assert_token_positions!(r"Should match {, but not \{", Token::BraceOpen, 13..14,);
+    fn token_invalid_backslash() {
+        assert_token_positions!(
+            r"Should match \+, but not \\+",
+            Token::InvalidBackslash,
+            13..15,
+        );
     }
 
     #[test]
@@ -168,13 +181,18 @@ mod tests {
     }
 
     #[test]
-    fn token_bracket_open() {
-        assert_token_positions!(r"Should match [, but not \[", Token::BracketOpen, 13..14,);
+    fn token_brace_open() {
+        assert_token_positions!(r"Should match {, but not \{", Token::BraceOpen, 13..14,);
     }
 
     #[test]
     fn token_bracket_close() {
         assert_token_positions!(r"Should match ], but not \]", Token::BracketClose, 13..14,);
+    }
+
+    #[test]
+    fn token_bracket_open() {
+        assert_token_positions!(r"Should match [, but not \[", Token::BracketOpen, 13..14,);
     }
 
     #[test]
@@ -188,19 +206,19 @@ mod tests {
     }
 
     #[test]
-    fn token_display_math_open() {
+    fn token_display_math_close() {
         assert_token_positions!(
-            r"Should match \[, but not [",
-            Token::DisplayMathOpen,
+            r"Should match \], but not ]",
+            Token::DisplayMathClose,
             13..15,
         );
     }
 
     #[test]
-    fn token_display_math_close() {
+    fn token_display_math_open() {
         assert_token_positions!(
-            r"Should match \], but not ]",
-            Token::DisplayMathClose,
+            r"Should match \[, but not [",
+            Token::DisplayMathOpen,
             13..15,
         );
     }
@@ -265,17 +283,17 @@ mod tests {
     }
 
     #[test]
-    fn token_inline_math_open() {
-        assert_token_positions!(r"Should match \(, but not (", Token::InlineMathOpen, 13..15,);
-    }
-
-    #[test]
     fn token_inline_math_close() {
         assert_token_positions!(
             r"Should match \), but not )",
             Token::InlineMathClose,
             13..15,
         );
+    }
+
+    #[test]
+    fn token_inline_math_open() {
+        assert_token_positions!(r"Should match \(, but not (", Token::InlineMathOpen, 13..15,);
     }
 
     #[test]
