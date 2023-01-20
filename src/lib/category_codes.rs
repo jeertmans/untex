@@ -23,7 +23,7 @@ pub enum CategoryCode {
     ///
     /// IniTEX makes the backslash \ (code 92) an escape character.
     #[token(r"\")]
-    EscapedChar = 0,
+    EscapeChar = 0,
     /// Beginning of group; such a character causes TEX to enter a new level of grouping.
     ///
     /// The plain format makes the open brace { a beginningof-group character.
@@ -114,7 +114,7 @@ macro_rules! impl_try_from {
             #[inline]
             fn try_from(code: $ty) -> Result<Self, Self::Error> {
                 match code {
-                    0 => Ok(CategoryCode::EscapedChar),
+                    0 => Ok(CategoryCode::EscapeChar),
                     1 => Ok(CategoryCode::GroupBegin),
                     2 => Ok(CategoryCode::GroupEnd),
                     3 => Ok(CategoryCode::MathShift),
@@ -199,8 +199,8 @@ mod tests {
     }
 
     #[test]
-    fn catcode_escaped_char() {
-        assert_catcode_positions!(r"Should match \", CategoryCode::EscapedChar, 13..14);
+    fn catcode_escape_char() {
+        assert_catcode_positions!(r"Should match \", CategoryCode::EscapeChar, 13..14);
     }
 
     #[test]
