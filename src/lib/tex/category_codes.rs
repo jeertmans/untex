@@ -1,4 +1,4 @@
-//! Category Codes
+//! Category codes assigned to character.
 //!
 //! This module provides tools to work category codes, see [`CategoryCode`].
 //!
