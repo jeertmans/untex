@@ -4,7 +4,7 @@
 
 use logos::Logos;
 
-#[derive(Debug, Logos)]
+#[derive(Debug, PartialEq, Logos)]
 /// Category codes, as defined in TeX by Topic (section 2.3).
 ///
 /// > Each of the 256 character codes (0–255) has an associated category code, though not necessarily
