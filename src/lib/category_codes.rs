@@ -42,6 +42,61 @@ pub enum CategoryCode {
     InvalidChar = 15,
 }
 
+macro_rules! impl_try_from {
+    ($ty:ty) => {
+        impl TryFrom<$ty> for CategoryCode {
+            type Error = $ty;
+            #[inline]
+            fn try_from(code: $ty) -> Result<Self, Self::Error> {
+                match code {
+                    0 => Ok(CategoryCode::EscapedChar),
+                    1 => Ok(CategoryCode::GroupBegin),
+                    2 => Ok(CategoryCode::GroupEnd),
+                    3 => Ok(CategoryCode::MathShift),
+                    4 => Ok(CategoryCode::AlignmentTab),
+                    5 => Ok(CategoryCode::EndOfLine),
+                    6 => Ok(CategoryCode::ParameterChar),
+                    7 => Ok(CategoryCode::Superscript),
+                    8 => Ok(CategoryCode::Subscript),
+                    9 => Ok(CategoryCode::Ignored),
+                    10 => Ok(CategoryCode::Space),
+                    11 => Ok(CategoryCode::Letter),
+                    12 => Ok(CategoryCode::Other),
+                    13 => Ok(CategoryCode::Active),
+                    14 => Ok(CategoryCode::CommentChar),
+                    15 => Ok(CategoryCode::InvalidChar),
+                    x => Err(x),
+                }
+            }
+        }
+    };
+    ($($ty:ty),+ $(,)?) => {
+        $(
+            impl_try_from!($ty);
+        )*
+    }
+}
+
+impl_try_from!(u8, u16, u32, u64, usize);
+
+macro_rules! impl_into {
+    ($ty:ty) => {
+        impl From<CategoryCode> for $ty {
+            #[inline]
+            fn from(code: CategoryCode) -> Self {
+                code as Self
+            }
+        }
+    };
+    ($($ty:ty),+ $(,)?) => {
+        $(
+            impl_into!($ty);
+        )*
+    };
+}
+
+impl_into!(u8, u16, u32, u64, usize);
+
 #[cfg(test)]
 mod tests {
     use super::*;
