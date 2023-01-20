@@ -5,39 +5,104 @@
 use logos::Logos;
 
 #[derive(Debug, Logos)]
-/// Category codes, as defined in TeX by Topic.
+/// Category codes, as defined in TeX by Topic (section 2.3).
+/// 
+/// > Each of the 256 character codes (0–255) has an associated category code, though not necessarily
+/// always the same one. There are 16 categories, numbered 0–15. When scanning the input, TEX thus
+/// forms character-code–category-code pairs. The input processor sees only these pairs; from them
+/// are formed character tokens, control sequence tokens, and parameter tokens. These tokens are then passed to TEX’s expansion and execution processes.
+/// >
+/// > A character token is a character-code–category-code pair that is passed unchanged. 
+/// A control sequence token consists of one or more characters preceded by an escape character;
+/// see below. Parameter tokens are also explained below.
+///
+/// The documentation of each enum variant is simple a copy / paste
+/// from aforementionned book.
 pub enum CategoryCode {
+    /// Escape character; this signals the start of a control sequence.
+    ///
+    /// IniTEX makes the backslash \ (code 92) an escape character.
     #[token(r"\")]
     EscapedChar = 0,
+    /// Beginning of group; such a character causes TEX to enter a new level of grouping.
+    ///
+    /// The plain format makes the open brace { a beginningof-group character.
     #[token("{")]
     GroupBegin = 1,
+    ///  End of group; TEX closes the current level of grouping.
+    ///
+    ///  Plain TEX has the closing brace } as end-of-group character.
     #[token("}")]
     GroupEnd = 2,
+    ///  Math shift; this is the opening and closing delimiter for math formulas.
+    ///
+    ///  Plain TEX uses the dollar sign $ for this.
     #[token("$")]
     MathShift = 3,
+    ///  Alignment tab; the column (row) separator in tables made with \halign (\valign). 
+    ///
+    ///  In plain TEX this is the ampersand &.
     #[token("&")]
     AlignmentTab = 4,
+    ///  End of line; a character that TEX considers to signal the end of an input line.
+    ///
+    ///  IniTEX assigns this code to the hreturni, that is, code 13. Not coincidentally, 13 is also
+    ///  the value that IniTEX assigns to the \endlinechar parameter; see above.
     #[token("\n")]
     EndOfLine = 5,
+    /// Parameter character; this indicates parameters for macros.
+    ///
+    /// In plain TEX this is the hash sign #.
     #[token("#")]
     ParameterChar = 6,
+    /// Superscript; this precedes superscript expressions in math mode.
+    ///
+    /// It is also used to denote character codes that cannot be entered in an input file; see below.
+    /// In plain TEX this is the circumflex ^.
     #[token("^")]
     Superscript = 7,
+    /// Subscript; this precedes subscript expressions in math mode.
+    ///
+    /// In plain TEX the underscore _ is used for this.
     #[token("_")]
     Subscript = 8,
+    /// Ignored; characters of this category are removed from the input, and have therefore
+    /// no influence on further TEX processing.
+    ///
+    /// In plain TEX this is the `null` character, that is, code 0.
     #[token("\x00")]
     Ignored = 9,
+    /// Space; space characters receive special treatment.
+    ///
+    /// IniTEX assigns this category to the ASCII `space` character, code 32.
     #[token(b" ")]
     Space = 10,
+    ///  Letter; in IniTEX only the characters `a..z`, `A..Z` are in this category.
+    ///
+    ///  Often, macropackages make some *'secret'* character (for instance @) into a letter.
     #[regex(r"[a-zA-Z]", priority = 2)]
     Letter = 11,
-    #[regex(b".")]
+    /// Other; IniTEX puts everything that is not in the other categories into this category.
+    ///
+    /// Thus it includes, for instance, digits and punctuation.
+    #[error]
     Other = 12,
+    ///  Active; active characters function as a TEX command, without being preceded by 
+    ///  an escape character.
+    ///
+    ///  In plain TEX this is only the tie character ~, which is defined to produce an
+    ///  unbreakable space; see page 187.
     #[token(b"~")]
     Active = 13,
+    ///  Comment character; from a comment character onwards, TEX considers the rest of
+    ///  an input line to be comment and ignores it.
+    ///
+    ///  In IniTEX the per cent sign % is made a comment character
     #[token(b"%")]
     CommentChar = 14,
-    #[error]
+    /// Invalid character; this category is for characters that should not appear in the input.
+    ///
+    /// IniTEX assigns the ASCII `delete` character, code 127, to this category.
     #[token("\x7F")]
     InvalidChar = 15,
 }
