@@ -109,7 +109,7 @@ pub enum CategoryCode {
 
 macro_rules! impl_try_from {
     ($ty:ty) => {
-        impl TryFrom<$ty> for CategoryCode {
+        impl std::convert::TryFrom<$ty> for CategoryCode {
             type Error = $ty;
             #[inline]
             fn try_from(code: $ty) -> Result<Self, Self::Error> {
@@ -296,5 +296,21 @@ mod tests {
     #[test]
     fn catcode_invalid_char() {
         assert_catcode_positions!("Should match \x7F", CategoryCode::InvalidChar, 13..14);
+    }
+
+    #[test]
+    fn test_try_from_ok() {
+        assert_eq!(CategoryCode::EscapeChar, 0u8.try_into().unwrap());
+    }
+
+    #[test]
+    fn test_try_from_err() {
+        assert!(CategoryCode::try_from(99u8).is_err());
+    }
+
+    #[test]
+    fn test_into() {
+        let u: u8 = CategoryCode::EscapeChar.into();
+        assert_eq!(u, 0u8);
     }
 }
