@@ -12,7 +12,7 @@ fn parse_environment_end<'source>(lex: &mut Lexer<'source, Token<'source>>) -> &
     &slice[5..slice.len() - 1]
 }
 
-#[derive(Logos, Debug, PartialEq)]
+#[derive(Logos, Debug, PartialEq, Eq)]
 /// Enumerates all meaningful tokens that can
 /// help parse a LaTeX document.
 pub enum Token<'source> {
@@ -132,6 +132,9 @@ pub enum Token<'source> {
     #[token("(")]
     ParenOpen,
 
+    #[token("+")]
+    PlusSign,
+
     #[token("?")]
     QuestionMark,
 
@@ -149,6 +152,12 @@ pub enum Token<'source> {
 
     #[regex(r"[a-zA-Z]+")]
     Word,
+}
+
+#[allow(non_upper_case_globals)]
+impl<'source> Token<'source> {
+    /// Alias to [`Token::Hyphen`] that should be used in math mode.
+    pub const MinusSign: Token<'source> = Token::Hyphen;
 }
 
 #[cfg(test)]
@@ -390,6 +399,11 @@ mod tests {
     }
 
     #[test]
+    fn token_minus_sign() {
+        assert_token_positions!(r"Should match -, but not \-", &Token::MinusSign, 13..14,);
+    }
+
+    #[test]
     fn token_newline() {
         assert_token_positions!("Hello\nMy name is\r\nJérome", Token::Newline, 5..6, 16..18,);
     }
@@ -412,6 +426,11 @@ mod tests {
     #[test]
     fn token_paren_open() {
         assert_token_positions!(r"Should match (, but not \(", Token::ParenOpen, 13..14,);
+    }
+
+    #[test]
+    fn token_plus_sign() {
+        assert_token_positions!(r"Should match +, but not \+", Token::PlusSign, 13..14,);
     }
 
     #[test]
