@@ -14,7 +14,7 @@ fn parse_environment_end<'source>(lex: &mut Lexer<'source, Token<'source>>) -> &
 
 #[derive(Logos, Debug, PartialEq)]
 /// Enumerates all meaningful tokens that can
-/// help parse a TeX document.
+/// help parse a LaTeX document.
 pub enum Token<'source> {
     #[token("&")]
     And,
