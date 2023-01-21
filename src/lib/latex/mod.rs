@@ -6,3 +6,6 @@
 //! > "*LATEX2e: An unofficial reference manual*",
 //! written by *latexref.xyz*,
 //! available here: <https://latexref.xyz/dev/latex2e.pdf>.
+pub mod format;
+pub mod highlight;
+pub mod token;

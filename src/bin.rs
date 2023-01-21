@@ -1,7 +1,6 @@
-use logos::Logos;
 //use untex::parse::{LaTeXDocument, TryFromTokens};
 use clap::Parser;
-use untex::token::Token;
+use untex::prelude::*;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about)]

@@ -1,3 +1,4 @@
+pub use logos::Span;
 use logos::{Lexer, Logos};
 
 /// Callback for [`Token::EnvironmentBegin`] that returns the environment name.
@@ -159,6 +160,8 @@ impl<'source> Token<'source> {
     /// Alias to [`Token::Hyphen`] that should be used in math mode.
     pub const MinusSign: Token<'source> = Token::Hyphen;
 }
+
+pub type SpannedToken<'source> = (Span, Token<'source>);
 
 #[cfg(test)]
 mod tests {
