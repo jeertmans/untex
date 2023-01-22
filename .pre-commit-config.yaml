@@ -1,0 +1,22 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+    -   id: check-yaml
+    -   id: check-toml
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+-   repo: github.com/doublify/pre-commit-rust
+    rev: v1.0
+    -   id: fmt
+    -   id: clippy
+-   repo: github.com/jumanjihouse/pre-commit-hook-yamlfmt
+    rev:
+    -   id: yamlfmt
+-   repo: github.com/macisamuele/language-formatters-pre-commit-hooks
+    rev: v2.6.0
+    -   id: pretty-format-yaml
+        args: [--autofix]
+    -   id: pretty-format-toml
+        arg: [--autofix]
+
