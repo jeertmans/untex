@@ -51,13 +51,13 @@ pub trait Highlighter<'source>: Iterator<Item = (bool, SpannedToken<'source>)> {
     where
         W: WriteColor,
     {
-        writer.reset();
+        writer.reset()?;
 
         for (is_highlighted, (span, _)) in self {
             if is_highlighted {
                 writer.set_color(highlight_color)?;
                 writer.write_all(source[span].as_bytes())?;
-                writer.reset();
+                writer.reset()?;
             } else {
                 writer.write_all(source[span].as_bytes())?;
             }
