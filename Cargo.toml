@@ -1,40 +1,38 @@
-[package]
-name = "untex"
-version = "0.3.0"
-authors = ["Jérome Eertmans <jeertmans@icloud.com>"]
-edition = "2021"
-description = "Understand and manipulate TeX files with ease."
-license = "MIT"
-readme = "README.md"
-repository = "https://github.com/jeertmans/untex"
-keywords = ["LaTeX", "TeX", "lexer", "detex", "opendetex"]
-
-[package.metadata.docs.rs]
-all-features = true
-rustdoc-args = ["--cfg", "docsrs"]
-
-[lib]
-name = "untex"
-path = "src/lib/lib.rs"
-
 [[bin]]
 name = "untex"
 path = "src/bin.rs"
 required-features = ["cli"]
 
 [dependencies]
-clap = { version = "4.1.1", features = ["derive", "wrap_help"], optional = true }
-is-terminal = { version = "0.4.2", optional = true }
+clap = {version = "4.1.1", features = ["derive", "wrap_help"], optional = true}
+is-terminal = {version = "0.4.2", optional = true}
 itertools = "0.10.5"
 logos = "0.12.1"
-termcolor = { version = "1.2.0", optional = true }
+termcolor = {version = "1.2.0", optional = true}
 thiserror = "1.0.38"
 
 [features]
-
+cli = ["dep:clap"]
+color = ["dep:is-terminal", "dep:termcolor"]
 default = [
-    "cli",
+  "cli"
 ]
 
-color = ["dep:is-terminal", "dep:termcolor"]
-cli = ["dep:clap"]
+[lib]
+name = "untex"
+path = "src/lib/lib.rs"
+
+[package]
+authors = ["Jérome Eertmans <jeertmans@icloud.com>"]
+description = "Understand and manipulate TeX files with ease."
+edition = "2021"
+keywords = ["LaTeX", "TeX", "lexer", "detex", "opendetex"]
+license = "MIT"
+name = "untex"
+readme = "README.md"
+repository = "https://github.com/jeertmans/untex"
+version = "0.3.0"
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
