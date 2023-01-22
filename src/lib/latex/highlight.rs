@@ -1,6 +1,8 @@
 //! Highlighting parts of LaTeX tokens.
 use crate::latex::token::{Span, SpannedToken, Token};
 use std::iter::FilterMap;
+#[cfg(feature = "color")]
+use termcolor::{ColorSpec, WriteColor};
 
 /// Trait for highlighting tokens.
 ///
@@ -34,6 +36,27 @@ pub trait Highlighter<'source>: Iterator<Item = (bool, SpannedToken<'source>)> {
         Self: Sized,
     {
         self.filter_map(|(b, spanned_token)| if b { Some(spanned_token) } else { None })
+    }
+
+    /// Writes tokens, using a specific color for highlighted tokens.
+    ///
+    /// See [`termcolor::ColorSpec`] for more details.
+    #[cfg(feature = "color")]
+    fn write_colorized<W>(self, source: &'source str, writer: &mut W, highlight_color: &ColorSpec) -> std::io::Result<()>
+    where
+        W: WriteColor,
+    {
+        writer.reset();
+
+        for (is_highlighted, (span, _)) in self {
+            if is_highlighted {
+                writer.set_color(highligh_color)?;
+                writer.write_all(source[span].as_bytes())?;
+                writer.reset();
+            } else {
+                writer.write_all(source[span].as_bytes())?;
+            }
+        }
     }
 }
 
