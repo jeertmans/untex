@@ -1,8 +1,8 @@
 on:
   push:
     paths:
-      - "src/lib/**.rs"
-      - "Cargo.toml"
+    - src/lib/**.rs
+    - Cargo.toml
   workflow_dispatch:
 
 name: Rustdoc
