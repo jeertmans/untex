@@ -42,7 +42,12 @@ pub trait Highlighter<'source>: Iterator<Item = (bool, SpannedToken<'source>)> {
     ///
     /// See [`termcolor::ColorSpec`] for more details.
     #[cfg(feature = "color")]
-    fn write_colorized<W>(self, source: &'source str, writer: &mut W, highlight_color: &ColorSpec) -> std::io::Result<()>
+    fn write_colorized<W>(
+        self,
+        source: &'source str,
+        writer: &mut W,
+        highlight_color: &ColorSpec,
+    ) -> std::io::Result<()>
     where
         W: WriteColor,
     {
