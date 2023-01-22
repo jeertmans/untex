@@ -10,7 +10,9 @@ repos:
   rev: v1.0
   hooks:
   - id: fmt
+    language: rust
   - id: clippy
+    language: rust
 - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
   rev: v2.6.0
   hooks:
