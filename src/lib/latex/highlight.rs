@@ -43,7 +43,7 @@ pub trait Highlighter<'source>: Iterator<Item = (bool, SpannedToken<'source>)> {
     /// See [`termcolor::ColorSpec`] for more details.
     #[cfg(feature = "color")]
     fn write_colorized<W>(
-        self,
+        &mut self,
         source: &'source str,
         writer: &mut W,
         highlight_color: &ColorSpec,
@@ -55,13 +55,14 @@ pub trait Highlighter<'source>: Iterator<Item = (bool, SpannedToken<'source>)> {
 
         for (is_highlighted, (span, _)) in self {
             if is_highlighted {
-                writer.set_color(highligh_color)?;
+                writer.set_color(highlight_color)?;
                 writer.write_all(source[span].as_bytes())?;
                 writer.reset();
             } else {
                 writer.write_all(source[span].as_bytes())?;
             }
         }
+        Ok(())
     }
 }
 
