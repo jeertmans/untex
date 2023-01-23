@@ -1,10 +1,25 @@
 //use untex::parse::{LaTeXDocument, TryFromTokens};
-use clap::{Parser, Subcommand};
+use clap::{Parser, Subcommand, ValueEnum};
 use is_terminal::IsTerminal;
 use std::path::PathBuf;
-use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
+use termcolor::{ColorChoice, StandardStream};
 use untex::latex::highlight::{HighlightCommand, Highlighter, TokenHighlighter};
 use untex::prelude::*;
+
+/// Output format used by UnTeX (depends on the command).
+///
+/// - `auto`: default to `colorized` in terminal, `annotated` otherwise
+/// - `colorized`: use color
+/// - `annotated`: use annotations
+/// - `json`: use a json object representation
+#[derive(Clone, Debug, ValueEnum)]
+enum OutputFormat {
+    Auto,
+    Colorized,
+    Annotated,
+    Json,
+}
+
 
 fn parse_filename(s: &str) -> Result<PathBuf, String> {
     let path_buf: PathBuf = s.parse().unwrap();
@@ -26,6 +41,20 @@ fn parse_directory(s: &str) -> Result<PathBuf, String> {
     }
 }
 
+/// UnTeX is a tool for manipulating TeX files.
+///
+/// Among others, it provides command for:
+/// - pretty formatting;
+/// - parsing content;
+/// - expanding macros;
+/// - identifying dependencies;
+/// - or highlighting parts of a document, such as comments.
+///
+/// UnTeX can either read from file(s) or from standard input,
+/// and can output its results in multiple formats:
+/// - colored text in terminal;
+/// - annotated text;
+/// - or JSON.
 #[derive(Parser, Debug)]
 #[command(
     author,
@@ -33,7 +62,8 @@ fn parse_directory(s: &str) -> Result<PathBuf, String> {
     about,
     long_about,
     propagate_version(true),
-    args_conflicts_with_subcommands(true)
+    args_conflicts_with_subcommands(true),
+    verbatim_doc_comment,
 )]
 struct Args {
     /// Filename(s) of TeX document(s) that should be used.
@@ -67,6 +97,15 @@ struct Args {
         default_value = "auto"
     )]
     color: clap::ColorChoice,
+
+    #[arg(
+        short,
+        long,
+        global = true,
+        value_name = "FORMAT",
+        default_value = "auto"
+    )]
+    output_format: OutputFormat,
 }
 
 #[derive(Subcommand, Debug)]
@@ -122,7 +161,7 @@ pub fn main() {
             let color = highlight.color_args.into();
 
             for source in sources.iter() {
-                let mut iter = Token::lexer(source.as_str()).spanned();
+                let iter = Token::lexer(source.as_str()).spanned();
 
                 TokenHighlighter::new(iter, token)
                     .write_colorized(source.as_str(), &mut stdout, &color)
