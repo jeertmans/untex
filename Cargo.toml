@@ -26,11 +26,12 @@ path = "src/lib/lib.rs"
 authors = ["Jérome Eertmans <jeertmans@icloud.com>"]
 description = "Understand and manipulate TeX files with ease."
 edition = "2021"
-keywords = ["LaTeX", "TeX", "lexer", "detex", "opendetex"]
+keywords = ["LaTeX", "TeX", "lexer", "detex", "opendetex", "formatter", "parsing"]
 license = "MIT"
 name = "untex"
 readme = "README.md"
 repository = "https://github.com/jeertmans/untex"
+rust-version = "1.64.0"
 version = "0.3.0"
 
 [package.metadata.docs.rs]

@@ -33,7 +33,7 @@ jobs:
     - name: Install stable toolchain
       uses: dtolnay/rust-toolchain@stable
       with:
-      - components: rustfmt
+        components: rustfmt
 
     - name: Check format
       run: cargo fmt --check
