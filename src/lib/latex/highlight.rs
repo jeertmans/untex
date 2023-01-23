@@ -126,11 +126,12 @@ mod cli {
 
     /// Highlight parts of TeX document(s) in a given color or return span locations.
     #[derive(Args, Debug)]
+    #[command(allow_missing_positional(true))]
     pub struct HighlightCommand {
         /// Part to be highlighted.
         /// Required unless `--token` is present, in which case it will be ignored.
-        #[arg(short, long, required_unless_present("token"), value_enum)]
-        part: Option<HighlightedPart>,
+        #[arg(required_unless_present("token"), value_enum)]
+        part: HighlightedPart,
         /// Token to be highlighted.
         #[arg(short, long, value_enum)]
         pub token: Option<TokenDiscriminants>,

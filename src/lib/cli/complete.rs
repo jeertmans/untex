@@ -3,18 +3,21 @@ use clap_complete::{generate, shells::Shell};
 
 /// Generate tab-completion scripts for supported shells.
 #[derive(Args, Debug)]
-#[command(after_help = "Use --help for installation help.", after_long_help = COMPLETIONS_HELP)]
-pub struct Complete {
+#[command(subcommand_negates_reqs(true), after_help = "Use --help for installation help.", after_long_help = COMPLETIONS_HELP)]
+pub struct CompleteCommand {
+    /// Shell for which to completion script is generated.
+    #[arg(value_enum, ignore_case = true, exclusive = true)]
     shell: Shell,
 }
 
-impl Complete {
-    fn generate_completion_file<F, W>(self, build_cli: F, stdout: &mut W)
+impl CompleteCommand {
+    /// Generate completion file for current shell and write to buffer.
+    fn generate_completion_file<F, W>(self, build_cli: F, buffer: &mut W)
     where
         F: FnOnce() -> Command,
         W: std::io::Write,
     {
-        generate(self.shell, &mut build_cli(), "untex", &mut stdout);
+        generate(self.shell, &mut build_cli(), "untex", buffer);
     }
 }
 
