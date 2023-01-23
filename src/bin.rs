@@ -20,7 +20,7 @@ enum OutputFormat {
     Json,
 }
 
-
+/// Parse a string slice into a [`PathBuf`], and error if the file does not exist.
 fn parse_filename(s: &str) -> Result<PathBuf, String> {
     let path_buf: PathBuf = s.parse().unwrap();
 
@@ -31,6 +31,7 @@ fn parse_filename(s: &str) -> Result<PathBuf, String> {
     }
 }
 
+/// Parse a string slice into a [`PathBuf`], and error if the directory does not exist.
 fn parse_directory(s: &str) -> Result<PathBuf, String> {
     let path_buf: PathBuf = s.parse().unwrap();
 
@@ -63,7 +64,7 @@ fn parse_directory(s: &str) -> Result<PathBuf, String> {
     long_about,
     propagate_version(true),
     args_conflicts_with_subcommands(true),
-    verbatim_doc_comment,
+    verbatim_doc_comment
 )]
 struct Args {
     /// Filename(s) of TeX document(s) that should be used.
@@ -110,6 +111,7 @@ struct Args {
 
 #[derive(Subcommand, Debug)]
 enum Command {
+    Check,
     #[clap(visible_alias = "deps")]
     Dependencies,
     Expand,
@@ -118,6 +120,34 @@ enum Command {
     #[clap(visible_alias = "fmt")]
     Format,
     Parse,
+    #[cfg(feature = "cli-complete")]
+    Complete,
+}
+
+fn read_from_stdin() -> String {
+    if std::io::stdin().is_terminal() {
+        #[cfg(windows)]
+        writeln!(
+            stdout,
+            "Reading from STDIN, press [CTRL+Z] when you're done."
+        )?;
+
+        #[cfg(unix)]
+        writeln!(
+            stdout,
+            "Reading from STDIN, press [CTRL+D] when you're done."
+        )?;
+    }
+    let mut source = String::new();
+    let stdin = std::io::stdin();
+
+    loop {
+        match stdin.read_line(&mut source) {
+            Ok(n) if n > 0 => (),
+            _ => break,
+        }
+    }
+    source
 }
 
 pub fn main() {
@@ -136,16 +166,7 @@ pub fn main() {
     let mut stdout = StandardStream::stdout(choice);
 
     let sources: Vec<String> = if args.stdin {
-        let mut source = String::new();
-        let stdin = std::io::stdin();
-
-        loop {
-            match stdin.read_line(&mut source) {
-                Ok(n) if n > 0 => (),
-                _ => break,
-            }
-        }
-        vec![source]
+        vec![read_from_stdin()]
     } else {
         let sources: Result<Vec<String>, _> = args
             .filenames

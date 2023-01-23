@@ -37,6 +37,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "clap_complete"
+version = "4.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ce8955d4e8cd4f28f9a01c93a050194c4d131e73ca02f6636bcddbed867014d7"
+dependencies = [
+ "clap",
+]
+
+[[package]]
 name = "clap_derive"
 version = "4.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -344,6 +353,7 @@ name = "untex"
 version = "0.3.0"
 dependencies = [
  "clap",
+ "clap_complete",
  "is-terminal",
  "itertools",
  "logos",
