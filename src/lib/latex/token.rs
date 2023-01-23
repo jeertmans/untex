@@ -1,5 +1,7 @@
 pub use logos::Span;
 use logos::{Lexer, Logos};
+#[cfg(feature = "strum")]
+use strum_macros::EnumDiscriminants;
 
 /// Callback for [`Token::EnvironmentBegin`] that returns the environment name.
 fn parse_environment_begin<'source>(lex: &mut Lexer<'source, Token<'source>>) -> &'source str {
@@ -14,6 +16,8 @@ fn parse_environment_end<'source>(lex: &mut Lexer<'source, Token<'source>>) -> &
 }
 
 #[derive(Logos, Debug, PartialEq, Eq)]
+#[cfg_attr(feature = "strum", derive(EnumDiscriminants))]
+#[cfg_attr(feature = "cli", strum_discriminants(derive(clap::ValueEnum)))]
 /// Enumerates all meaningful tokens that can
 /// help parse a LaTeX document.
 pub enum Token<'source> {
@@ -161,7 +165,7 @@ impl<'source> Token<'source> {
     pub const MinusSign: Token<'source> = Token::Hyphen;
 }
 
-pub type SpannedToken<'source> = (Span, Token<'source>);
+pub type SpannedToken<'source> = (Token<'source>, Span);
 
 #[cfg(test)]
 mod tests {

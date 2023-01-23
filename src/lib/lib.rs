@@ -28,6 +28,8 @@
 //! If you find a bug using UnTeX, please create an [issue on
 //! GitHub](https://github.com/jeertmans/untex/issues), so we can continue
 //! on improving this tool.
+#[cfg(feature = "cli")]
+pub mod cli;
 pub mod latex;
 pub mod prelude;
 pub mod tex;

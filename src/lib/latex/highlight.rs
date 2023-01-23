@@ -1,4 +1,6 @@
 //! Highlighting parts of LaTeX tokens.
+#[cfg(feature = "strum")]
+use crate::latex::token::TokenDiscriminants;
 use crate::latex::token::{Span, SpannedToken, Token};
 use std::iter::FilterMap;
 #[cfg(feature = "color")]
@@ -18,7 +20,7 @@ pub trait Highlighter<'source>: Iterator<Item = (bool, SpannedToken<'source>)> {
     where
         Self: Sized,
     {
-        self.filter_map(|(b, (span, _))| if b { Some(span) } else { None })
+        self.filter_map(|(b, (_, span))| if b { Some(span) } else { None })
     }
 
     /// Returns highlight tokens.
@@ -26,7 +28,7 @@ pub trait Highlighter<'source>: Iterator<Item = (bool, SpannedToken<'source>)> {
     where
         Self: Sized,
     {
-        self.filter_map(|(b, (_, token))| if b { Some(token) } else { None })
+        self.filter_map(|(b, (token, _))| if b { Some(token) } else { None })
     }
 
     /// Returns highlight spanned tokens.
@@ -54,7 +56,7 @@ pub trait Highlighter<'source>: Iterator<Item = (bool, SpannedToken<'source>)> {
     {
         writer.reset()?;
 
-        for (is_highlighted, (span, _)) in self {
+        for (is_highlighted, (_, span)) in self {
             if is_highlighted {
                 writer.set_color(highlight_color)?;
                 writer.write_all(source[span].as_bytes())?;
@@ -69,15 +71,28 @@ pub trait Highlighter<'source>: Iterator<Item = (bool, SpannedToken<'source>)> {
 
 impl<'source, I> Highlighter<'source> for I where I: Iterator<Item = (bool, SpannedToken<'source>)> {}
 
-/// Highlights comments.
-pub struct CommentHighlighter<'source, I>
+/// Highlights a specific token through its (discriminant) name.
+#[cfg(feature = "strum")]
+pub struct TokenHighlighter<'source, I>
 where
     I: Iterator<Item = SpannedToken<'source>>,
 {
     iter: I,
+    token: TokenDiscriminants,
 }
 
-impl<'source, I> Iterator for CommentHighlighter<'source, I>
+#[cfg(feature = "strum")]
+impl<'source, I> TokenHighlighter<'source, I>
+where
+    I: Iterator<Item = SpannedToken<'source>>,
+{
+    pub fn new(iter: I, token: TokenDiscriminants) -> Self {
+        Self { iter, token }
+    }
+}
+
+#[cfg(feature = "strum")]
+impl<'source, I> Iterator for TokenHighlighter<'source, I>
 where
     I: Iterator<Item = SpannedToken<'source>>,
 {
@@ -85,9 +100,44 @@ where
 
     fn next(&mut self) -> Option<Self::Item> {
         match self.iter.next() {
-            Some((span, Token::Comment)) => Some((true, (span, Token::Comment))),
+            Some((token, span)) if TokenDiscriminants::from(&token) == self.token => {
+                Some((true, (token, span)))
+            }
             Some(spanned_token) => Some((false, spanned_token)),
             None => None,
         }
     }
 }
+
+#[cfg(feature = "cli")]
+mod cli {
+    use super::*;
+    use crate::cli::color::ColorArgs;
+    use clap::{Args, Parser, ValueEnum};
+
+    #[derive(Clone, Debug, ValueEnum)]
+    enum HighlightedPart {
+        Math,
+        Preamble,
+        Document,
+        InlineMath,
+        DisplayMath,
+    }
+
+    /// Highlight parts of TeX document(s) in a given color or return span locations.
+    #[derive(Args, Debug)]
+    pub struct HighlightCommand {
+        /// Part to be highlighted.
+        /// Required unless `--token` is present, in which case it will be ignored.
+        #[arg(short, long, required_unless_present("token"), value_enum)]
+        part: Option<HighlightedPart>,
+        /// Token to be highlighted.
+        #[arg(short, long, value_enum)]
+        pub token: Option<TokenDiscriminants>,
+        #[command(flatten)]
+        pub color_args: ColorArgs,
+    }
+}
+
+#[cfg(feature = "cli")]
+pub use cli::*;
