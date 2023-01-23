@@ -17,7 +17,7 @@ Currently, you can install it with Cargo:
 cargo install untex --all-features
 ```
 
-> **NOTE**: while using `--features cli` is sufficient to install UnTeX's CLI, using all features is recommend to take most benefits out of it! 
+> **NOTE**: while using `--features cli` is sufficient to install UnTeX's CLI, using all features is recommend to take most benefits out of it!
 
 ### Usage
 
@@ -72,4 +72,4 @@ If you are in a situation where you think UnTeX produces a wrong result, please 
 
 ## Contributing
 
-Contributions are more than welcome! Making UnTeX a good and reliable TeX tool is a matter of time and work, so any kind of help is a step towards a better UnTex! 
+Contributions are more than welcome! Making UnTeX a good and reliable TeX tool is a matter of time and work, so any kind of help is a step towards a better UnTex!

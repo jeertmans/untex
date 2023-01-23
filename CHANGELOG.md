@@ -11,4 +11,3 @@ As of `v1.0.0`, Semantic Versioning will also be applied. Meaning that, for a gi
 ## [0.4.0]() - 2023-XX-XX
 
 This release features a complete refactoring of both the library and the executable. As such, versions before `0.4.0` are considered incompatible with the current and all futures versions of UnTeX.
-
