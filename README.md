@@ -23,12 +23,12 @@ cargo install untex --all-features
 
 UnTeX has multiple commands, each one with a specific application:
 
-* `check` for checking that a document will compile without error[$^*$](#disclaimers);
+* `check` for checking that a document will compile without error[*](#disclaimers);
 * `dependendies`, or `deps`, for extracting dependencies from a TeX project;
 * `expand` for expanding macros (e.g., `\input{...}` or `\include{...}`);
 * `highlight`, or `hl`, for highlighting parts (e.g., comments) of TeX documents;
 * `format` for pretty formatting your TeX files;
-* `parse` for parsing and validating TeX documents[$^*$](#disclaimers).
+* `parse` for parsing and validating TeX documents[*](#disclaimers).
 
 
 ```bash
