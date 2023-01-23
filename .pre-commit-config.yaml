@@ -13,5 +13,3 @@ repos:
     args: [--autofix]
   - id: pretty-format-toml
     args: [--autofix]
-  - id: pretty-format-rust
-    args: [--autofix]
