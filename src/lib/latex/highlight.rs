@@ -11,6 +11,7 @@ use termcolor::{ColorSpec, WriteColor};
 ///
 /// This trait is automatically implemented on iterators that emit
 /// `(bool, SpannedToken)` items.
+#[allow(clippy::type_complexity)]
 pub trait Highlighter<'source>: Iterator<Item = (bool, SpannedToken<'source>)> {
     /// Returns highlight spans.
     fn higlight_spans(self) -> FilterMap<Self, fn(Self::Item) -> Option<Span>>
