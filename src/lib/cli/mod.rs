@@ -1,22 +1,21 @@
-//! Command-line tools.
+//! Command line tools.
 //!
 //! This module is specifically designed to be used by UnTeX's binary target.
-//! It contains all the content needed to create UnTeX's command-line interface.
+//! It contains all the content needed to create UnTeX's command line interface.
 //!
 //! Each subcommand of the CLI should be runnable only using its arguments.
 //! This is why subcommands derive the [`clap::Parser`] trait.
-//! ```
 
 pub mod color;
+pub mod highlight;
 pub mod io;
 pub mod traits;
-pub use crate::latex::highlight::cli::*;
 use clap::{CommandFactory, Parser, Subcommand};
 pub use traits::*;
 #[cfg(feature = "cli-complete")]
 pub mod complete;
 
-/// Main command-line structure. Contains every subcommand.
+/// Main command line structure. Contains every subcommand.
 #[derive(Parser, Debug)]
 #[command(
     author,
@@ -31,6 +30,7 @@ pub struct Cli {
     pub command: Command,
 }
 
+/// Enumerate all possible commands.
 #[derive(Subcommand, Debug)]
 pub enum Command {
     Check,
@@ -38,7 +38,7 @@ pub enum Command {
     Dependencies,
     Expand,
     #[clap(visible_alias = "hl")]
-    Highlight(HighlightCommand),
+    Highlight(highlight::HighlightCommand),
     #[clap(visible_alias = "fmt")]
     Format,
     Parse,
@@ -46,11 +46,16 @@ pub enum Command {
     Complete(complete::CompleteCommand),
 }
 
+/// Build a command from the top-level command line structure.
 pub fn build_cli() -> clap::Command {
     Cli::command()
 }
 
-#[test]
-fn test_cli() {
-    build_cli().debug_assert();
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_cli() {
+        Cli::command().debug_assert();
+    }
 }

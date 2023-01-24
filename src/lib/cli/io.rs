@@ -6,7 +6,6 @@ use std::io;
 use std::path::PathBuf;
 use termcolor::{ColorChoice, StandardStream};
 
-
 /// Parse a string slice into a [`PathBuf`], and error if the file does not exist.
 fn parse_filename(s: &str) -> Result<PathBuf, String> {
     let path_buf: PathBuf = s.parse().unwrap();
@@ -36,7 +35,7 @@ pub struct InputArgs {
     ///
     /// If multiple filenames are provided, calls to `\input{...}` and `\include{...}` are ignored,
     /// even if `follow-includes` is present.
-    #[arg(num_args(1..), value_parser = parse_filename)]
+    #[arg(num_args(1..), index(2), value_parser = parse_filename)]
     pub filenames: Vec<PathBuf>,
 
     /// If set, read files from calls to `\input{...}` and `\include{...}`.
@@ -94,7 +93,8 @@ where
 
 #[derive(Args, Debug)]
 pub struct OutputArgs {
-    #[arg(short, long, value_name = "WHEN", default_value = "auto")]
+    /// Specify WHEN to colorize output.
+    #[arg(short, long, value_name = "WHEN", default_value = "auto", default_missing_value = "always", num_args(0..=1))]
     pub color: clap::ColorChoice,
     #[arg(short, long, value_enum, default_value_t = OutputFormat::Auto)]
     pub output_format: OutputFormat,

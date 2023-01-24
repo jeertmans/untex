@@ -1,13 +1,12 @@
 /// Completion scripts generation with [`clap_complete`].
-
 use super::traits::Execute;
-use clap::{Parser, Command};
+use clap::{Command, Parser};
 use clap_complete::{generate, shells::Shell};
 use std::io;
 
-/// Generate tab-completion scripts for supported shells.
+/// Command structure to generate complete scripts.
 #[derive(Debug, Parser)]
-#[command(after_help = "Use --help for installation help.", after_long_help = COMPLETIONS_HELP)]
+#[command(about = "Generate tab-completion scripts for supported shells.",after_help = "Use --help for installation help.", after_long_help = COMPLETIONS_HELP)]
 pub struct CompleteCommand {
     /// Shell for which to completion script is generated.
     #[arg(value_enum, ignore_case = true)]
@@ -106,3 +105,13 @@ pub(crate) static COMPLETIONS_HELP: &str = r"DISCUSSION:
         PS C:\> untex completions powershell >> ${env:USERPROFILE}\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1
     SOURCE:
         This documentation is directly taken from: https://github.com/rust-lang/rustup/blob/8f6b53628ad996ad86f9c6225fa500cddf860905/src/cli/help.rs#L157";
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use clap::CommandFactory;
+    #[test]
+    fn test_complete() {
+        CompleteCommand::command().debug_assert();
+    }
+}
