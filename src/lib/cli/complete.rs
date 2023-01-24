@@ -1,23 +1,35 @@
-use clap::{Args, Command};
+/// Completion scripts generation with [`clap_complete`].
+
+use super::traits::Execute;
+use clap::{Parser, Command};
 use clap_complete::{generate, shells::Shell};
+use std::io;
 
 /// Generate tab-completion scripts for supported shells.
-#[derive(Args, Debug)]
-#[command(subcommand_negates_reqs(true), after_help = "Use --help for installation help.", after_long_help = COMPLETIONS_HELP)]
+#[derive(Debug, Parser)]
+#[command(after_help = "Use --help for installation help.", after_long_help = COMPLETIONS_HELP)]
 pub struct CompleteCommand {
     /// Shell for which to completion script is generated.
-    #[arg(value_enum, ignore_case = true, exclusive = true)]
+    #[arg(value_enum, ignore_case = true)]
     shell: Shell,
 }
 
 impl CompleteCommand {
     /// Generate completion file for current shell and write to buffer.
-    fn generate_completion_file<F, W>(self, build_cli: F, buffer: &mut W)
+    pub fn generate_completion_file<F, W>(self, build_cli: F, buffer: &mut W)
     where
         F: FnOnce() -> Command,
         W: std::io::Write,
     {
         generate(self.shell, &mut build_cli(), "untex", buffer);
+    }
+}
+
+impl Execute for CompleteCommand {
+    type Error = io::Error;
+    fn execute(self) -> Result<(), Self::Error> {
+        self.generate_completion_file(super::build_cli, &mut io::stdout());
+        Ok(())
     }
 }
 

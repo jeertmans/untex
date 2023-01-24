@@ -4,7 +4,7 @@ use termcolor::{Color, ColorSpec};
 /// Color specification used with [`termcolor::WriteColor`].
 ///
 /// For valid colors, see [`termcolor::Color`].
-#[derive(Args, Debug)]
+#[derive(Args, Clone, Debug)]
 pub struct ColorArgs {
     /// Set the foreground color.
     #[clap(long, default_value = "red")]
