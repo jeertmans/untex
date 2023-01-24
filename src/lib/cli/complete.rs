@@ -6,7 +6,11 @@ use std::io;
 
 /// Command structure to generate complete scripts.
 #[derive(Debug, Parser)]
-#[command(about = "Generate tab-completion scripts for supported shells.",after_help = "Use --help for installation help.", after_long_help = COMPLETIONS_HELP)]
+#[command(
+    about = "Generate tab-completion scripts for supported shells.",
+    after_help = "Use --help for installation help.",
+    after_long_help = COMPLETIONS_HELP
+)]
 pub struct CompleteCommand {
     /// Shell for which to completion script is generated.
     #[arg(value_enum, ignore_case = true)]

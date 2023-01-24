@@ -35,7 +35,7 @@ pub struct InputArgs {
     ///
     /// If multiple filenames are provided, calls to `\input{...}` and `\include{...}` are ignored,
     /// even if `follow-includes` is present.
-    #[arg(num_args(1..), index(2), value_parser = parse_filename)]
+    #[arg(num_args(1..), value_parser = parse_filename)]
     pub filenames: Vec<PathBuf>,
 
     /// If set, read files from calls to `\input{...}` and `\include{...}`.
@@ -48,6 +48,11 @@ pub struct InputArgs {
 }
 
 impl InputArgs {
+    /// Return filename path as vector of string slices.
+    pub fn filenames_str<'a>(&'a self) -> Vec<&'a str> {
+        self.filenames.iter().map(|p| p.to_str().unwrap()).collect()
+    }
+    /// Read one or more sources, either from filenames or frind standard input.
     pub fn read_sources(&self) -> io::Result<Vec<String>> {
         let sources: Vec<String> = if self.filenames.is_empty() {
             let mut source = String::new();
