@@ -22,21 +22,6 @@ pub mod complete;
     author,
     version,
     about = "UnTex: TeX files manipulations made easy.",
-    long_about = "UnTex: TeX files manipulations made easy.
-
-Among others, it provides commands for:
-- pretty formatting;
-- parsing content;
-- expanding macros;
-- identifying dependencies;
-- or highlighting parts of a document, such as comments.
-
-UnTeX can either read from file(s) or from standard input,
-and can output its results in multiple formats:
-- colored text in terminal;
-- annotated text;
-- or JSON.
-    ",
     propagate_version(true),
     subcommand_required(true),
     verbatim_doc_comment
