@@ -56,7 +56,7 @@ untex = "^0.4.0"
 
 ### Documentation
 
-Automatically generated documentation can found found [here](https://docs.rs/untex).
+Automatically generated documentation can be found found [here](https://docs.rs/untex).
 
 ### Feature Flags
 
@@ -103,4 +103,4 @@ and explain to me what you expected!
 
 Contributions are more than welcome!
 Making UnTeX a good and reliable TeX tool is a matter of time and work,
-so any kind of help is a step towards a better UnTex!
+so any kind of help is a step towards a better UnTeX!
