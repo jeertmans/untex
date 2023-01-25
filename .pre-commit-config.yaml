@@ -13,3 +13,8 @@ repos:
     args: [--autofix]
   - id: pretty-format-toml
     args: [--autofix]
+- repo: https://github.com/igorshubovych/markdownlint-cli
+  rev: 0.33.0
+  hooks:
+  - id: markdownlint
+  - id: markdownlint-fix
