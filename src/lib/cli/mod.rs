@@ -43,7 +43,7 @@ pub enum Command {
     Format,
     Parse,
     #[cfg(feature = "cli-complete")]
-    Complete(complete::CompleteCommand),
+    Completions(complete::CompleteCommand),
 }
 
 /// Build a command from the top-level command line structure.

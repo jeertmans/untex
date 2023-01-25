@@ -17,6 +17,6 @@ pub fn main() {
         Command::Highlight(cmd) => cmd.execute().unwrap(),
         Command::Format => issue!(6),
         Command::Parse => issue!(7),
-        Command::Complete(cmd) => cmd.execute().unwrap(),
+        Command::Completions(cmd) => cmd.execute().unwrap(),
     }
 }
