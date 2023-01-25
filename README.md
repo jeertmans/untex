@@ -7,9 +7,9 @@ UnTeX is both a library and an executable that allows you to manipulate and
 understand TeX files.
 
 > **NOTE**: even though TeX and LaTeX are not the same,
-UnTeX assumes that TeX documents are written such that
-they will be parsed with some LaTeX engine.
-For "*pure*" TeX content, see the `src/lib/tex` module.
+> UnTeX assumes that TeX documents are written such that
+> they will be parsed with some LaTeX engine.
+> For "*pure*" TeX content, see the `src/lib/tex` module.
 
 ## Executable
 
@@ -22,17 +22,22 @@ cargo install untex --all-features
 ```
 
 > **NOTE**: while using `--features cli` is sufficient to install UnTeX's CLI,
-using all features is recommend to take most benefits out of it!
+> using all features is recommend to take most benefits out of it!
 
 ### Usage
 
 UnTeX has multiple commands, each one with a specific application:
 
 * `check` for checking that a document will compile without error[*](#disclaimers);
+
 * `dependendies`, or `deps`, for extracting dependencies from a TeX project;
+
 * `expand` for expanding macros (e.g., `\input{...}` or `\include{...}`);
+
 * `highlight`, or `hl`, for highlighting parts (e.g., comments) of TeX documents;
+
 * `format` for pretty formatting your TeX files;
+
 * `parse` for parsing and validating TeX documents[*](#disclaimers).
 
 ```bash
@@ -56,6 +61,7 @@ Automatically generated documentation can found found [here](https://docs.rs/unt
 #### Default Features
 
 * **color**: Adds support for output colorized text in the terminal with `termcolor`.
+
 * **strum**: Uses `strum_macros`'s capabilities to enhance `Enum`s all across
 the library.
 
@@ -63,12 +69,15 @@ the library.
 
 * **cli**: Adds command-line related methods for multiple structures.
 This feature is required to install UnTeX's CLI.
+
 * **annotate**: (Soon) Adds method(s) to annotate results from check request.
 If **cli** feature is also enabled, the CLI will by default print an annotated
 output.
+
 * **cli-complete**: Adds commands to generate completion files for various
 shells. This feature also activates the **cli** feature.
 Enter `untex completions --help` for get help with installing completion files.
+
 * **json**: (Soon) Adds the `json` output option.
 
 ### Disclaimers
@@ -77,7 +86,7 @@ As this project is under active development, expect non backward compatible
 changes from version to version.
 Before reaching **v1.x.x**, UnTeX will be considered as unstable.
 
-### What is a valid (La)TeX document?
+### What is a valid (La)TeX document
 
 Parsing La(TeX) documents is very complicated, and the main reasons are
 detailed in the header of the documentation. Because of this, UnTex does
