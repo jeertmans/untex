@@ -13,6 +13,8 @@ body:
         - Library (crate)
         - Both
         - None
+    validations:
+      required: true
   - type: textarea
     id: description
     attributes:
