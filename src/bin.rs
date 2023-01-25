@@ -3,7 +3,7 @@ use untex::cli::*;
 
 macro_rules! issue {
     ($issue:expr) => {
-        eprintln!("{}", build_cli().error(clap::error::ErrorKind::InvalidValue, format!("The command you are trying to access is currently unimplemented, and its development can be followed on https://github.com/jeertmans/untex/pull/{}", $issue)))
+        build_cli().error(clap::error::ErrorKind::InvalidValue, format!("The command you are trying to access is currently unimplemented, and its development can be followed on https://github.com/jeertmans/untex/pull/{}", $issue)).exit()
     };
 }
 

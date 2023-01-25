@@ -4,7 +4,7 @@ use crate::cli::io::{InputArgs, OutputArgs};
 use crate::cli::traits::Execute;
 use crate::latex::highlight::*;
 use crate::latex::token::{Token, TokenDiscriminants};
-use clap::{Parser, ValueEnum};
+use clap::{CommandFactory, Parser, ValueEnum};
 use logos::Logos;
 
 /// Define the part of TeX code to be highlighted.
@@ -17,42 +17,20 @@ enum HighlightedPart {
     DisplayMath,
 }
 
-/*
-#[derive(Clone, Debug)]
-pub enum Test {
-    Part(HighlightedPart),
-    Token(TokenDiscriminants),
-}
-
-
-impl ValueEnum for Test {
-    fn value_variants<'a>() -> &'a [Self] ⓘ{
-        &[]
-    }
-    fn to_possible_value(&self) -> Option<clap::builder::PossibleValue> {
-        match self {
-            Self::Part(p) => p.to_possible_value(),
-            Self::Token(t) => t.to_possible_value(),
-        }
-    }
-}*/
-
 /// Command structure to highlight parts of TeX codes.
 #[derive(Debug, Parser)]
 #[command(
     about = "Highlight parts of TeX document(s) in a given color or return span locations.",
     arg_required_else_help = true,
-    override_usage = "untex highlight [OPTIONS] [-p|--part] <PART> [FILENAMES]...\n
-    untex highlight [OPTIONS] [-t|--token] <TOKEN> [FILENAMES]...\n
-    command | untex highlight [OPTIONS] [-p|--part] <PART>\n
+    override_usage = "untex highlight [OPTIONS] [PART] [-- <FILENAMES>...]\n
+    untex highlight [OPTIONS] [-t|--token] <TOKEN> [-- <FILENAMES>...]\n
+    command | untex highlight [OPTIONS] [PART]\n
     command | untex highlight [OPTIONS] [-t|--token] <TOKEN>"
 )]
 pub struct HighlightCommand {
     /// Part to be highlighted.
     /// Required unless `--token` is present.
     #[arg(
-        short,
-        long,
         required_unless_present("token"),
         conflicts_with("token"),
         value_enum,
@@ -62,8 +40,6 @@ pub struct HighlightCommand {
     /// Token to be highlighted.
     #[arg(short, long, value_enum, ignore_case = true)]
     pub token: Option<TokenDiscriminants>,
-    //#[arg(short, long, value_enum, ignore_case = true)]
-    //pub test: Option<Test>,
     #[command(flatten)]
     pub input_args: InputArgs,
     #[command(flatten)]
@@ -77,7 +53,7 @@ impl Execute for HighlightCommand {
         let sources = self.input_args.read_sources().unwrap();
 
         if self.part.is_some() {
-            unimplemented!("Highlighting [PART] is currently not implemented");
+            Self::command().error(clap::error::ErrorKind::InvalidValue, "Highlighting [PART] is currently not implemented, and its development can be followed on https://github.com/jeertmans/untex/pull/8").exit();
         }
 
         let token = self.token.unwrap();
@@ -104,20 +80,13 @@ mod tests {
     }
     #[test]
     fn test_part_and_one_file_trailing() {
-        let m = HighlightCommand::try_parse_from(vec!["", "-p", "math", "--", "README.md"]);
+        let m = HighlightCommand::try_parse_from(vec!["", "math", "--", "README.md"]);
         assert!(m.is_ok(), "{}", m.unwrap_err());
         assert_eq!(m.unwrap().input_args.filenames_str(), vec!["README.md"]);
     }
     #[test]
     fn test_part_and_two_files_trailing() {
-        let m = HighlightCommand::try_parse_from(vec![
-            "",
-            "-p",
-            "math",
-            "--",
-            "README.md",
-            "LICENSE.md",
-        ]);
+        let m = HighlightCommand::try_parse_from(vec!["", "math", "--", "README.md", "LICENSE.md"]);
         assert!(m.is_ok(), "{}", m.unwrap_err());
         assert_eq!(
             m.unwrap().input_args.filenames_str(),
@@ -147,52 +116,6 @@ mod tests {
             "--token",
             "comment",
             "--",
-            "README.md",
-            "LICENSE.md",
-        ]);
-        assert!(m.is_ok(), "{}", m.unwrap_err());
-        assert_eq!(
-            m.unwrap().input_args.filenames_str(),
-            vec!["README.md", "LICENSE.md"]
-        );
-    }
-    #[test]
-    fn test_part_and_one_file() {
-        let m = HighlightCommand::try_parse_from(vec!["", "-p", "math", "README.md"]);
-        assert!(m.is_ok(), "{}", m.unwrap_err());
-        assert_eq!(m.unwrap().input_args.filenames_str(), vec!["README.md"]);
-    }
-    #[test]
-    fn test_part_and_two_files() {
-        let m = HighlightCommand::try_parse_from(vec!["", "-p", "math", "README.md", "LICENSE.md"]);
-        assert!(m.is_ok(), "{}", m.unwrap_err());
-        assert_eq!(
-            m.unwrap().input_args.filenames_str(),
-            vec!["README.md", "LICENSE.md"]
-        );
-    }
-    #[test]
-    fn test_missing_part_and_one_file() {
-        let m = HighlightCommand::try_parse_from(vec!["", "README.md"]);
-        assert!(m.is_err());
-    }
-    #[test]
-    fn test_missing_part_and_two_files() {
-        let m = HighlightCommand::try_parse_from(vec!["", "README.md", "LICENSE.md"]);
-        assert!(m.is_err());
-    }
-    #[test]
-    fn test_token_and_one_file() {
-        let m = HighlightCommand::try_parse_from(vec!["", "--token", "comment", "README.md"]);
-        assert!(m.is_ok(), "{}", m.unwrap_err());
-        assert_eq!(m.unwrap().input_args.filenames_str(), vec!["README.md"]);
-    }
-    #[test]
-    fn test_token_and_two_files() {
-        let m = HighlightCommand::try_parse_from(vec![
-            "",
-            "--token",
-            "comment",
             "README.md",
             "LICENSE.md",
         ]);
