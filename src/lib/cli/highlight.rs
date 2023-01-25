@@ -9,6 +9,7 @@ use logos::Logos;
 
 /// Define the part of TeX code to be highlighted.
 #[derive(Clone, Debug, ValueEnum)]
+#[allow(missing_docs)]
 enum HighlightedPart {
     Math,
     Preamble,
@@ -41,8 +42,10 @@ pub struct HighlightCommand {
     #[arg(short, long, value_enum, ignore_case = true)]
     pub token: Option<TokenDiscriminants>,
     #[command(flatten)]
+    #[allow(missing_docs)]
     pub input_args: InputArgs,
     #[command(flatten)]
+    #[allow(missing_docs)]
     pub output_args: OutputArgs,
 }
 

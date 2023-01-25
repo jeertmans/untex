@@ -23,11 +23,13 @@ fn parse_environment_end<'source>(lex: &mut Lexer<'source, Token<'source>>) -> &
     &slice[5..slice.len() - 1]
 }
 
-#[derive(Logos, Debug, PartialEq, Eq)]
-#[cfg_attr(feature = "strum", derive(EnumDiscriminants))]
-#[cfg_attr(feature = "cli", strum_discriminants(derive(clap::ValueEnum)))]
 /// Enumerates all meaningful tokens that can
 /// help parse a LaTeX document.
+#[derive(Logos, Debug, PartialEq, Eq)]
+#[allow(missing_docs)]
+#[cfg_attr(feature = "strum", derive(EnumDiscriminants))]
+#[cfg_attr(feature = "strum", strum_discriminants(allow(missing_docs)))]
+#[cfg_attr(feature = "cli", strum_discriminants(derive(clap::ValueEnum)))]
 pub enum Token<'source> {
     #[token("&")]
     And,

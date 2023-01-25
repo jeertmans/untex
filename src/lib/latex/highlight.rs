@@ -73,6 +73,7 @@ impl<'source, I> Highlighter<'source> for I where I: Iterator<Item = (bool, Span
 
 /// Highlights a specific token through its (discriminant) name.
 #[cfg(feature = "strum")]
+#[derive(Debug)]
 pub struct TokenHighlighter<'source, I>
 where
     I: Iterator<Item = SpannedToken<'source>>,
@@ -86,6 +87,7 @@ impl<'source, I> TokenHighlighter<'source, I>
 where
     I: Iterator<Item = SpannedToken<'source>>,
 {
+    /// Create a new token highlighter.
     pub fn new(iter: I, token: TokenDiscriminants) -> Self {
         Self { iter, token }
     }

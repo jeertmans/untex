@@ -7,6 +7,7 @@ use std::path::PathBuf;
 use termcolor::{ColorChoice, StandardStream};
 
 #[derive(Clone, Debug, ValueEnum)]
+#[allow(missing_docs)]
 /// Enumerate all possible choices for an "automatic" boolean flag.
 pub enum Choice {
     Always,
@@ -37,6 +38,7 @@ fn parse_directory(s: &str) -> Result<PathBuf, String> {
 }
 
 #[derive(Args, Debug)]
+#[allow(missing_docs)]
 pub struct InputArgs {
     /// Filename(s) of TeX document(s) that should be used.
     /// If not present, will read content from standard input.
@@ -103,6 +105,7 @@ where
 }
 
 #[derive(Args, Debug)]
+#[allow(missing_docs)]
 pub struct OutputArgs {
     /// Specify WHEN to colorize output.
     #[arg(short, long, value_name = "WHEN", default_value = "auto", default_missing_value = "always", num_args(0..=1), require_equals(true))]
@@ -114,6 +117,7 @@ pub struct OutputArgs {
     #[arg(short, long, value_enum, default_value_t = OutputFormat::Auto)]
     pub output_format: OutputFormat,
     #[command(flatten)]
+    #[allow(missing_docs)]
     pub color_args: super::color::ColorArgs,
 }
 
@@ -142,6 +146,7 @@ impl OutputArgs {
 /// - `annotated`: use annotations
 /// - `json`: use a json object representation
 #[derive(Clone, Debug, ValueEnum)]
+#[allow(missing_docs)]
 pub enum OutputFormat {
     Auto,
     Colorized,
