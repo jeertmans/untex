@@ -6,13 +6,12 @@ body:
   - type: dropdown
     id: cli-or-crate
     attributes:
-      label: 
+      label: Part
       description: Which sub-part of UnTeX is it related to?
       options:
         - Executable (CLI)
         - Library (crate)
         - Both
-        - None
     validations:
       required: true
   - type: textarea
