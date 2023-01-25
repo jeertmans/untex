@@ -1,5 +1,6 @@
 # UnTeX
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/5d61c49a08044552b7ec27a933391eca)](https://app.codacy.com/gh/jeertmans/untex?utm_source=github.com&utm_medium=referral&utm_content=jeertmans/untex&utm_campaign=Badge_Grade_Settings)
 [![Crates.io](https://img.shields.io/crates/v/untex)](https://crates.io/crates/untex)
 [![docs.rs](https://img.shields.io/docsrs/untex)](https://docs.rs/untex)
 
