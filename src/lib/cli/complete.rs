@@ -1,4 +1,5 @@
-/// Completion scripts generation with [`clap_complete`].
+//! Completion scripts generation with [`clap_complete`].
+
 use super::traits::Execute;
 use clap::{Command, Parser};
 use clap_complete::{generate, shells::Shell};

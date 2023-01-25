@@ -1,3 +1,5 @@
+//! Color-related CLI tools.
+
 use clap::Args;
 use termcolor::{Color, ColorSpec};
 

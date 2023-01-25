@@ -1,5 +1,5 @@
-//#![deny(missing_docs)]
-//#![deny(missing_debug_implementations)]
+#![deny(missing_docs)]
+#![deny(missing_debug_implementations)]
 #![warn(clippy::must_use_candidate)]
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 //! UnTeX, a library for manipulating (La)TeX files.

@@ -27,11 +27,13 @@ pub mod complete;
 )]
 pub struct Cli {
     #[command(subcommand)]
+    #[allow(missing_docs)]
     pub command: Command,
 }
 
 /// Enumerate all possible commands.
 #[derive(Subcommand, Debug)]
+#[allow(missing_docs)]
 pub enum Command {
     Check,
     #[clap(visible_alias = "deps")]
