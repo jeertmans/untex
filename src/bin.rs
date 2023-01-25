@@ -11,12 +11,12 @@ pub fn main() {
     let cli = Cli::parse_from(wild::args());
 
     match cli.command {
-        Command::Check => issue!(3),
-        Command::Dependencies => issue!(4),
-        Command::Expand => issue!(5),
+        Command::Check => issue!(7),
+        Command::Dependencies => issue!(8),
+        Command::Expand => issue!(9),
         Command::Highlight(cmd) => cmd.execute().unwrap(),
-        Command::Format => issue!(6),
-        Command::Parse => issue!(7),
+        Command::Format => issue!(10),
+        Command::Parse => issue!(11),
         Command::Completions(cmd) => cmd.execute().unwrap(),
     }
 }

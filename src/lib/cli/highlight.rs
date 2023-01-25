@@ -53,7 +53,7 @@ impl Execute for HighlightCommand {
         let sources = self.input_args.read_sources().unwrap();
 
         if self.part.is_some() {
-            Self::command().error(clap::error::ErrorKind::InvalidValue, "Highlighting [PART] is currently not implemented, and its development can be followed on https://github.com/jeertmans/untex/pull/8").exit();
+            Self::command().error(clap::error::ErrorKind::InvalidValue, "Highlighting [PART] is currently not implemented, and its development can be followed on https://github.com/jeertmans/untex/pull/12").exit();
         }
 
         let token = self.token.unwrap();

@@ -6,6 +6,14 @@ use std::io;
 use std::path::PathBuf;
 use termcolor::{ColorChoice, StandardStream};
 
+#[derive(Clone, Debug, ValueEnum)]
+/// Enumerate all possible choices for an "automatic" boolean flag.
+pub enum Choice {
+    Always,
+    Auto,
+    Never,
+}
+
 /// Parse a string slice into a [`PathBuf`], and error if the file does not exist.
 fn parse_filename(s: &str) -> Result<PathBuf, String> {
     let path_buf: PathBuf = s.parse().unwrap();
@@ -39,8 +47,8 @@ pub struct InputArgs {
     pub filenames: Vec<PathBuf>,
 
     /// If set, read files from calls to `\input{...}` and `\include{...}`.
-    #[arg(short, long)]
-    pub follow_includes: bool,
+    #[arg(short, long, value_name("WHEN"), value_enum, default_value = "auto", default_missing_value = "always", num_args(0..=1), require_equals(true))]
+    pub follow_includes: Choice,
 
     /// Directoy used for relative paths, if standard input is used.
     #[arg(short, long, value_parser = parse_directory, default_value = ".")]
@@ -99,8 +107,12 @@ where
 #[derive(Args, Debug)]
 pub struct OutputArgs {
     /// Specify WHEN to colorize output.
-    #[arg(short, long, value_name = "WHEN", default_value = "auto", default_missing_value = "always", num_args(0..=1))]
+    #[arg(short, long, value_name = "WHEN", default_value = "auto", default_missing_value = "always", num_args(0..=1), require_equals(true))]
     pub color: clap::ColorChoice,
+    /// Whether output show, when possible, be written in place.
+    #[arg(short, long, value_name("WHEN"), value_enum, default_value = "auto", default_missing_value = "always", num_args(0..=1), require_equals(true))]
+    pub inplace: Choice,
+    /// How the output result should preferably be formatted.
     #[arg(short, long, value_enum, default_value_t = OutputFormat::Auto)]
     pub output_format: OutputFormat,
     #[command(flatten)]
