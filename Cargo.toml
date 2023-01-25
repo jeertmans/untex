@@ -1,28 +1,43 @@
-[package]
+[[bin]]
 name = "untex"
-version = "0.3.0"
-authors = ["Jérome Eertmans <jeertmans@icloud.com>"]
-edition = "2021"
-description = "Understand and manipulate TeX files with ease."
-license = "MIT"
-readme = "README.md"
-repository = "https://github.com/jeertmans/untex"
-keywords = ["LaTeX", "TeX", "lexer", "detex", "opendetex"]
+path = "src/bin.rs"
+required-features = ["cli"]
+
+[dependencies]
+clap = {version = "4.1.1", features = ["derive", "wrap_help"], optional = true}
+clap_complete = {version = "4.1.0", optional = true}
+is-terminal = {version = "0.4.2", optional = true}
+itertools = "0.10.5"
+logos = "0.12.1"
+strum_macros = {version = "0.24.3", optional = true}
+termcolor = {version = "1.2.0", optional = true}
+thiserror = "1.0.38"
+wild = {version = "2.1.0", optional = true}
+
+[features]
+cli = ["color", "dep:clap", "dep:wild", "strum"]
+cli-complete = ["dep:clap_complete", "cli"]
+color = ["dep:is-terminal", "dep:termcolor"]
+default = ["color", "strum"]
+strum = ["dep:strum_macros"]
 
 [lib]
 name = "untex"
 path = "src/lib/lib.rs"
 
-[[bin]]
+[package]
+authors = ["Jérome Eertmans <jeertmans@icloud.com>"]
+description = "Understand and manipulate TeX files with ease."
+edition = "2021"
+keywords = ["LaTeX", "TeX", "lexer", "detex", "opendetex", "formatter", "parsing"]
+license = "MIT"
 name = "untex"
-path = "src/bin.rs"
+readme = "README.md"
+repository = "https://github.com/jeertmans/untex"
+rust-version = "1.64.0"
+version = "0.4.0-alpha"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-ansi_term = "0.12.1"
-regex = "1"
-clap = { version = "3.1.8", features = ["derive"] }
-lazy_static = "1.4.0"
-ptree = "0.4.0"
-itertools = "0.10.3"
+[package.metadata.docs.rs]
+all-features = true
+cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples"]
+rustdoc-args = ["--cfg", "docsrs"]
