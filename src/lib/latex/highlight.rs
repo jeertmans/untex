@@ -1,4 +1,4 @@
-//! Highlighting parts of LaTeX tokens.
+//! Highlighting parts of LaTeX documents via [`Token`] iterators.
 #[cfg(feature = "strum")]
 use crate::latex::token::TokenDiscriminants;
 use crate::latex::token::{Span, SpannedToken, Token};
@@ -16,7 +16,7 @@ use termcolor::{ColorSpec, WriteColor};
 #[allow(clippy::type_complexity)]
 pub trait Highlighter<'source>: Iterator<Item = (bool, SpannedToken<'source>)> {
     /// Returns highlight spans.
-    fn higlight_spans(self) -> FilterMap<Self, fn(Self::Item) -> Option<Span>>
+    fn highlight_spans(self) -> FilterMap<Self, fn(Self::Item) -> Option<Span>>
     where
         Self: Sized,
     {
@@ -24,7 +24,7 @@ pub trait Highlighter<'source>: Iterator<Item = (bool, SpannedToken<'source>)> {
     }
 
     /// Returns highlight tokens.
-    fn higlight_tokens(self) -> FilterMap<Self, fn(Self::Item) -> Option<Token<'source>>>
+    fn highlight_tokens(self) -> FilterMap<Self, fn(Self::Item) -> Option<Token<'source>>>
     where
         Self: Sized,
     {
@@ -32,7 +32,7 @@ pub trait Highlighter<'source>: Iterator<Item = (bool, SpannedToken<'source>)> {
     }
 
     /// Returns highlight spanned tokens.
-    fn higlight_spanned_tokens(
+    fn highlight_spanned_tokens(
         self,
     ) -> FilterMap<Self, fn(Self::Item) -> Option<SpannedToken<'source>>>
     where
@@ -48,21 +48,21 @@ pub trait Highlighter<'source>: Iterator<Item = (bool, SpannedToken<'source>)> {
     fn write_colorized<W>(
         &mut self,
         source: &'source str,
-        writer: &mut W,
+        buffer: &mut W,
         highlight_color: &ColorSpec,
     ) -> std::io::Result<()>
     where
         W: WriteColor,
     {
-        writer.reset()?;
+        buffer.reset()?;
 
         for (is_highlighted, (_, span)) in self {
             if is_highlighted {
-                writer.set_color(highlight_color)?;
-                writer.write_all(source[span].as_bytes())?;
-                writer.reset()?;
+                buffer.set_color(highlight_color)?;
+                buffer.write_all(source[span].as_bytes())?;
+                buffer.reset()?;
             } else {
-                writer.write_all(source[span].as_bytes())?;
+                buffer.write_all(source[span].as_bytes())?;
             }
         }
         Ok(())

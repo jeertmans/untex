@@ -47,6 +47,7 @@ pub enum Command {
 }
 
 /// Build a command from the top-level command line structure.
+#[must_use]
 pub fn build_cli() -> clap::Command {
     Cli::command()
 }

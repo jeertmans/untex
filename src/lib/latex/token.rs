@@ -1,3 +1,11 @@
+//! LaTeX tokens, essential for parsing documents.
+//!
+//! This module defines [`Token`], an enumeration of all important tokens
+//! in a LaTeX document, along with other related structures and functions.
+//!
+//! Most importantly, [`Token`] derives [`Logos`], which allows to create
+//! a very efficient lexer from a string slice.
+
 pub use logos::Span;
 use logos::{Lexer, Logos};
 #[cfg(feature = "strum")]
@@ -131,6 +139,9 @@ pub enum Token<'source> {
     #[error]
     Other,
 
+    /// Variant to be allocated later by the user.
+    OwnedString(String),
+
     #[token(")")]
     ParenClose,
 
@@ -165,6 +176,7 @@ impl<'source> Token<'source> {
     pub const MinusSign: Token<'source> = Token::Hyphen;
 }
 
+/// A [`Token`] with its [`Span`].
 pub type SpannedToken<'source> = (Token<'source>, Span);
 
 #[cfg(test)]

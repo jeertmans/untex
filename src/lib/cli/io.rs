@@ -57,7 +57,8 @@ pub struct InputArgs {
 
 impl InputArgs {
     /// Return filename path as vector of string slices.
-    pub fn filenames_str<'a>(&'a self) -> Vec<&'a str> {
+    #[must_use]
+    pub fn filenames_str(&self) -> Vec<&'_ str> {
         self.filenames.iter().map(|p| p.to_str().unwrap()).collect()
     }
     /// Read one or more sources, either from filenames or frind standard input.
@@ -67,11 +68,8 @@ impl InputArgs {
             read_from_stdin(&mut io::stdout(), &mut source)?;
             vec![source]
         } else {
-            let sources: Result<Vec<String>, _> = self
-                .filenames
-                .iter()
-                .map(|filename| std::fs::read_to_string(&filename))
-                .collect();
+            let sources: Result<Vec<String>, _> =
+                self.filenames.iter().map(std::fs::read_to_string).collect();
             sources?
         };
         Ok(sources)
@@ -121,6 +119,7 @@ pub struct OutputArgs {
 
 impl OutputArgs {
     /// Return a standard output stream that optionally supports color.
+    #[must_use]
     pub fn stdout(&self) -> StandardStream {
         let mut choice: ColorChoice = match self.color {
             clap::ColorChoice::Auto => ColorChoice::Auto,
