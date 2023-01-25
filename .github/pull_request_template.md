@@ -1,12 +1,13 @@
-<!-- If your PR fixes an open issue, use `Closes #999` to link your PR with the issue. #999 stands for the issue number you are fixing -->
+<!-- If your PR fixes an open issue, use `Closes #999` to link your PR
+with the issue. #999 stands for the issue number you are fixing -->
 
-## Fixes Issue
+# Fixes Issue
 
 <!-- Remove this section if not applicable -->
 
 <!-- Example: Closes #31 -->
 
-## Description
+# Description
 
 <!-- Describe all the proposed changes in your PR -->
 
@@ -17,7 +18,7 @@
 - [ ] If I modified already existing code, I updated the documentation accordingly.
 - [ ] The title of my pull request is a short description of the requested changes.
 
-## Screenshots
+# Screenshots
 
 <!-- Add all the screenshots which support your changes -->
 
