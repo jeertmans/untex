@@ -45,7 +45,7 @@ pub struct InputArgs {
     ///
     /// If multiple filenames are provided, calls to `\input{...}` and `\include{...}` are ignored,
     /// even if `follow-includes` is present.
-    #[arg(num_args(1..), last(true), value_parser = parse_filename)]
+    #[arg(num_args(0..), value_parser = parse_filename)]
     pub filenames: Vec<PathBuf>,
 
     /// If set, read files from calls to `\input{...}` and `\include{...}`.
