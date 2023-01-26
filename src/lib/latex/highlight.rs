@@ -110,3 +110,282 @@ where
         }
     }
 }
+
+/// Highlights tokens within math mode.
+#[derive(Debug)]
+pub struct MathHighlighter<'source, I>
+where
+    I: Iterator<Item = SpannedToken<'source>>,
+{
+    iter: I,
+    in_math_mode: bool,
+    closing_token: Option<Token<'source>>,
+}
+
+impl<'source, I> MathHighlighter<'source, I>
+where
+    I: Iterator<Item = SpannedToken<'source>>,
+{
+    /// Create a new math mode highlighter.
+    pub fn new(iter: I) -> Self {
+        Self {
+            iter,
+            in_math_mode: false,
+            closing_token: None,
+        }
+    }
+}
+
+impl<'source, I> Iterator for MathHighlighter<'source, I>
+where
+    I: Iterator<Item = SpannedToken<'source>>,
+{
+    type Item = (bool, SpannedToken<'source>);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.iter.next() {
+            Some((token, span)) => {
+                if self.in_math_mode {
+                    if token == self.closing_token.as_ref().cloned().unwrap() {
+                        self.in_math_mode = false;
+                        self.closing_token = None;
+                    }
+                    Some((true, (token, span)))
+                } else {
+                    self.in_math_mode = true;
+                    match token {
+                        Token::DisplayMathOpen => {
+                            self.closing_token = Some(Token::DisplayMathClose)
+                        }
+                        Token::DollarSign => self.closing_token = Some(Token::DollarSign),
+                        Token::DoubleDollarSign => {
+                            self.closing_token = Some(Token::DoubleDollarSign)
+                        }
+                        Token::EnvironmentBegin(name)
+                            if matches!(name, "equation" | "equation*" | "align" | "align*") =>
+                        {
+                            self.closing_token = Some(Token::EnvironmentEnd(name))
+                        }
+                        Token::InlineMathOpen => self.closing_token = Some(Token::InlineMathClose),
+                        _ => self.in_math_mode = false,
+                    }
+
+                    Some((self.in_math_mode, (token, span)))
+                }
+            }
+            None => None,
+        }
+    }
+}
+
+/// Highlights tokens within preamble.
+#[derive(Debug)]
+pub struct PreambleHighlighter<'source, I>
+where
+    I: Iterator<Item = SpannedToken<'source>>,
+{
+    iter: I,
+    in_preamble: bool,
+}
+
+impl<'source, I> PreambleHighlighter<'source, I>
+where
+    I: Iterator<Item = SpannedToken<'source>>,
+{
+    /// Create a new preamble highlighter.
+    pub fn new(iter: I) -> Self {
+        Self {
+            iter,
+            in_preamble: false,
+        }
+    }
+}
+
+impl<'source, I> Iterator for PreambleHighlighter<'source, I>
+where
+    I: Iterator<Item = SpannedToken<'source>>,
+{
+    type Item = (bool, SpannedToken<'source>);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.iter.next() {
+            Some((token, span)) => {
+                match token {
+                    Token::DocumentClass => self.in_preamble = true,
+                    Token::EnvironmentBegin("document") => self.in_preamble = false,
+                    _ => (),
+                }
+                Some((self.in_preamble, (token, span)))
+            }
+            None => None,
+        }
+    }
+}
+
+/// Highlights tokens within document.
+#[derive(Debug)]
+pub struct DocumentHighlighter<'source, I>
+where
+    I: Iterator<Item = SpannedToken<'source>>,
+{
+    iter: I,
+    in_document: bool,
+}
+
+impl<'source, I> DocumentHighlighter<'source, I>
+where
+    I: Iterator<Item = SpannedToken<'source>>,
+{
+    /// Create a new preamble highlighter.
+    pub fn new(iter: I) -> Self {
+        Self {
+            iter,
+            in_document: false,
+        }
+    }
+}
+
+impl<'source, I> Iterator for DocumentHighlighter<'source, I>
+where
+    I: Iterator<Item = SpannedToken<'source>>,
+{
+    type Item = (bool, SpannedToken<'source>);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.iter.next() {
+            Some((token, span)) => {
+                match token {
+                    Token::EnvironmentBegin("document") => self.in_document = true,
+                    Token::EnvironmentEnd("document") => {
+                        self.in_document = false;
+                        return Some((true, (token, span)));
+                    }
+                    _ => (),
+                }
+                Some((self.in_document, (token, span)))
+            }
+            None => None,
+        }
+    }
+}
+
+/// Highlights tokens within display math mode.
+#[derive(Debug)]
+pub struct DisplayMathHighlighter<'source, I>
+where
+    I: Iterator<Item = SpannedToken<'source>>,
+{
+    iter: I,
+    in_math_mode: bool,
+    closing_token: Option<Token<'source>>,
+}
+
+impl<'source, I> DisplayMathHighlighter<'source, I>
+where
+    I: Iterator<Item = SpannedToken<'source>>,
+{
+    /// Create a new display math mode highlighter.
+    pub fn new(iter: I) -> Self {
+        Self {
+            iter,
+            in_math_mode: false,
+            closing_token: None,
+        }
+    }
+}
+
+impl<'source, I> Iterator for DisplayMathHighlighter<'source, I>
+where
+    I: Iterator<Item = SpannedToken<'source>>,
+{
+    type Item = (bool, SpannedToken<'source>);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.iter.next() {
+            Some((token, span)) => {
+                if self.in_math_mode {
+                    if token == self.closing_token.as_ref().cloned().unwrap() {
+                        self.in_math_mode = false;
+                        self.closing_token = None;
+                    }
+                    Some((true, (token, span)))
+                } else {
+                    self.in_math_mode = true;
+                    match token {
+                        Token::DisplayMathOpen => {
+                            self.closing_token = Some(Token::DisplayMathClose)
+                        }
+                        Token::DoubleDollarSign => {
+                            self.closing_token = Some(Token::DoubleDollarSign)
+                        }
+                        Token::EnvironmentBegin(name)
+                            if matches!(name, "equation" | "equation*" | "align" | "align*") =>
+                        {
+                            self.closing_token = Some(Token::EnvironmentEnd(name))
+                        }
+                        _ => self.in_math_mode = false,
+                    }
+
+                    Some((self.in_math_mode, (token, span)))
+                }
+            }
+            None => None,
+        }
+    }
+}
+
+/// Highlights tokens within inline math mode.
+#[derive(Debug)]
+pub struct InlineMathHighlighter<'source, I>
+where
+    I: Iterator<Item = SpannedToken<'source>>,
+{
+    iter: I,
+    in_math_mode: bool,
+    closing_token: Option<Token<'source>>,
+}
+
+impl<'source, I> InlineMathHighlighter<'source, I>
+where
+    I: Iterator<Item = SpannedToken<'source>>,
+{
+    /// Create a new inline math mode highlighter.
+    pub fn new(iter: I) -> Self {
+        Self {
+            iter,
+            in_math_mode: false,
+            closing_token: None,
+        }
+    }
+}
+
+impl<'source, I> Iterator for InlineMathHighlighter<'source, I>
+where
+    I: Iterator<Item = SpannedToken<'source>>,
+{
+    type Item = (bool, SpannedToken<'source>);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        match self.iter.next() {
+            Some((token, span)) => {
+                if self.in_math_mode {
+                    if token == self.closing_token.as_ref().cloned().unwrap() {
+                        self.in_math_mode = false;
+                        self.closing_token = None;
+                    }
+                    Some((true, (token, span)))
+                } else {
+                    self.in_math_mode = true;
+                    match token {
+                        Token::DollarSign => self.closing_token = Some(Token::DollarSign),
+                        Token::InlineMathOpen => self.closing_token = Some(Token::InlineMathClose),
+                        _ => self.in_math_mode = false,
+                    }
+
+                    Some((self.in_math_mode, (token, span)))
+                }
+            }
+            None => None,
+        }
+    }
+}
