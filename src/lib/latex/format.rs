@@ -31,3 +31,37 @@ pub trait Formatter<'source>: Iterator<Item = SpannedToken<'source>> {
 }
 
 impl<'source, I> Formatter<'source> for I where I: Iterator<Item = SpannedToken<'source>> {}
+
+/// Dommy formatter, should be removed before v4.0 is released.
+#[derive(Debug)]
+pub struct DummyFormatter<'source, I>
+where
+    I: Iterator<Item = SpannedToken<'source>>,
+{
+    iter: I,
+}
+
+impl<'source, I> DummyFormatter<'source, I>
+where
+    I: Iterator<Item = SpannedToken<'source>>,
+{
+    /// Create a new dummy formatter.
+    pub fn new(iter: I) -> Self {
+        Self { iter }
+    }
+}
+
+impl<'source, I> Iterator for DummyFormatter<'source, I>
+where
+    I: Iterator<Item = SpannedToken<'source>>,
+{
+    type Item = SpannedToken<'source>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        // Dummy formatter skips comments
+        match self.iter.next() {
+            Some((Token::Comment, _)) => self.next(),
+            next => next,
+        }
+    }
+}
