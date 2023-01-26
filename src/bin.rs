@@ -15,7 +15,7 @@ pub fn main() {
         Command::Dependencies => issue!(8),
         Command::Expand => issue!(9),
         Command::Highlight(cmd) => cmd.execute().unwrap(),
-        Command::Format => issue!(10),
+        Command::Format(cmd) => cmd.execute().unwrap(),
         Command::Parse => issue!(11),
         #[cfg(feature = "cli-complete")]
         Command::Completions(cmd) => cmd.execute().unwrap(),

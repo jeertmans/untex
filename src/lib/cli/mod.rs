@@ -7,6 +7,7 @@
 //! This is why subcommands derive the [`clap::Parser`] trait.
 
 pub mod color;
+pub mod format;
 pub mod highlight;
 pub mod io;
 pub mod traits;
@@ -42,7 +43,7 @@ pub enum Command {
     #[clap(visible_alias = "hl")]
     Highlight(highlight::HighlightCommand),
     #[clap(visible_alias = "fmt")]
-    Format,
+    Format(format::FormatCommand),
     Parse,
     #[cfg(feature = "cli-complete")]
     Completions(complete::CompleteCommand),

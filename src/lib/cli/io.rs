@@ -22,7 +22,7 @@ fn parse_filename(s: &str) -> Result<PathBuf, String> {
     if path_buf.is_file() {
         Ok(path_buf)
     } else {
-        Err(format!("Invalid filename: {}", s))
+        Err(format!("Invalid filename: {s}"))
     }
 }
 
@@ -33,7 +33,7 @@ fn parse_directory(s: &str) -> Result<PathBuf, String> {
     if path_buf.is_dir() {
         Ok(path_buf)
     } else {
-        Err(format!("Invalid directory: {}", s))
+        Err(format!("Invalid directory: {s}"))
     }
 }
 
