@@ -42,7 +42,7 @@ UnTeX has multiple commands, each one with a specific application:
 
 * `parse` for parsing and validating TeX documents[*](#disclaimers).
 
-* `completions` to generate completions scripts for your shell 
+* `completions` to generate completions scripts for your shell
 (needs `"cli-complete"` feature).
 
 ```bash
