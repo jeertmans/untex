@@ -42,8 +42,23 @@ UnTeX has multiple commands, each one with a specific application:
 
 * `parse` for parsing and validating TeX documents[*](#disclaimers).
 
+* `completions` to generate completions scripts for your shell
+(needs `"cli-complete"` feature).
+
 ```bash
-untex <COMMAND> [OPTIONS] [REQUIRED ARGS]...
+untex <COMMAND> [OPTIONS] [FILENAMES]...
+```
+
+A complete usage help can be obtained with `untex [-h|--help]` or with
+`untex <COMMAND> [-h|--help]` for a given command.
+
+### Examples
+
+#### Highlighting text
+
+```bash
+untex hl -p math main.tex
+echo "% this is a comment\nthis is not a comment" | untex hl -t comment
 ```
 
 ## Library
