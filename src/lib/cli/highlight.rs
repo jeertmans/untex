@@ -4,7 +4,7 @@ use crate::cli::io::{InputArgs, OutputArgs};
 use crate::cli::traits::Execute;
 use crate::latex::highlight::*;
 use crate::latex::token::{Token, TokenDiscriminants};
-use clap::{CommandFactory, Parser, ValueEnum};
+use clap::{Parser, ValueEnum};
 use logos::Logos;
 
 /// Define the part of TeX code to be highlighted.
