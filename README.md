@@ -48,7 +48,7 @@ UnTeX has multiple commands, each one with a specific application:
 untex <COMMAND> [OPTIONS] [FILENAMES]...
 ```
 
-A complete usage help can be obtained with `untex [-h|--help]` or with 
+A complete usage help can be obtained with `untex [-h|--help]` or with
 `untex <COMMAND> [-h|--help]` for a given command.
 
 ### Examples
@@ -59,6 +59,7 @@ A complete usage help can be obtained with `untex [-h|--help]` or with
 untex hl -p math main.tex
 echo "% this is a comment\nthis is not a comment" | untex hl -t comment
 ```
+
 ## Library
 
 You can use UnTeX in your Rust project by adding to your `Cargo.toml`:
