@@ -4,7 +4,7 @@ use crate::cli::io::{InputArgs, OutputArgs};
 use crate::cli::traits::Execute;
 use crate::latex::highlight::*;
 use crate::latex::token::{Token, TokenDiscriminants};
-use clap::{CommandFactory, Parser, ValueEnum};
+use clap::{Parser, ValueEnum};
 use logos::Logos;
 
 /// Define the part of TeX code to be highlighted.
@@ -39,7 +39,7 @@ pub struct HighlightCommand {
         ignore_case = true,
         default_value = "math"
     )]
-    part: Option<HighlightedPart>,
+    part: HighlightedPart,
     /// Token to be highlighted.
     /// Cannot be used with `--part <PART>`.
     #[arg(short, long, conflicts_with("part"), value_enum, ignore_case = true)]
@@ -58,19 +58,33 @@ impl Execute for HighlightCommand {
         let mut stdout = self.output_args.stdout();
         let sources = self.input_args.read_sources().unwrap();
 
-        if self.part.is_some() {
-            Self::command().error(clap::error::ErrorKind::InvalidValue, "Highlighting <PART> is currently not implemented, and its development can be followed on https://github.com/jeertmans/untex/pull/12").exit();
-        }
-
-        let token = self.token.unwrap();
         let color = self.output_args.color_args.into();
 
         for source in sources.iter() {
             let iter = Token::lexer(source.as_str()).spanned();
-
-            TokenHighlighter::new(iter, token)
-                .write_colorized(source.as_str(), &mut stdout, &color)
-                .unwrap();
+            if let Some(token) = self.token {
+                TokenHighlighter::new(iter, token)
+                    .write_colorized(source.as_str(), &mut stdout, &color)
+                    .unwrap();
+            } else {
+                match self.part {
+                    HighlightedPart::Math => MathHighlighter::new(iter)
+                        .write_colorized(source.as_str(), &mut stdout, &color)
+                        .unwrap(),
+                    HighlightedPart::Preamble => PreambleHighlighter::new(iter)
+                        .write_colorized(source.as_str(), &mut stdout, &color)
+                        .unwrap(),
+                    HighlightedPart::Document => DocumentHighlighter::new(iter)
+                        .write_colorized(source.as_str(), &mut stdout, &color)
+                        .unwrap(),
+                    HighlightedPart::InlineMath => InlineMathHighlighter::new(iter)
+                        .write_colorized(source.as_str(), &mut stdout, &color)
+                        .unwrap(),
+                    HighlightedPart::DisplayMath => DisplayMathHighlighter::new(iter)
+                        .write_colorized(source.as_str(), &mut stdout, &color)
+                        .unwrap(),
+                }
+            };
         }
         Ok(())
     }
