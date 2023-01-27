@@ -20,7 +20,7 @@ The most convenient way of using UnTeX is through its command-line interface (CL
 Currently, you can install it with Cargo:
 
 ```bash
-cargo install untex --all-features
+cargo install untex --all-features --version 0.4.0-beta
 ```
 
 > **NOTE**: while using `--features cli` is sufficient to install UnTeX's CLI,
@@ -66,7 +66,7 @@ echo "% this is a comment\nthis is not a comment" | untex hl -t comment
 You can use UnTeX in your Rust project by adding to your `Cargo.toml`:
 
 ```toml
-untex = "^0.4.0-beta"
+untex = "0.4.0-beta"
 ```
 
 ### Documentation
