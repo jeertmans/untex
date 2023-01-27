@@ -16,11 +16,12 @@ jobs:
     - name: Install stable toolchain
       uses: dtolnay/rust-toolchain@stable
 
-    - name: Cache dependencies
-      uses: Swatinem/rust-cache@v2
-
-    - name: Download cargo-msrv
-      run: cargo install cargo-msrv
+    - name: Install Cargo MSRV
+      uses: baptiste0928/cargo-install@v1
+      with:
+        crate: cargo-msrv
+        args: --no-default-features
+        version: ^0.15.1
 
     - name: Check MSRV
       run: cargo msrv verify -- cargo check --all-features
