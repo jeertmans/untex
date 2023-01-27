@@ -7,7 +7,7 @@ use crate::latex::token::Token;
 use clap::Parser;
 use logos::Logos;
 
-/// Command structure to highlight parts of TeX codes.
+/// Command structure to pretty format TeX documents.
 #[derive(Debug, Parser)]
 #[command(about = "Pretty format TeX document(s).")]
 pub struct FormatCommand {
