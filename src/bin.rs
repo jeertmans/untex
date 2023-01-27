@@ -1,5 +1,6 @@
 use clap::Parser;
 use untex::cli::*;
+use untex::error::Result;
 
 macro_rules! issue {
     ($issue:expr) => {
@@ -7,17 +8,19 @@ macro_rules! issue {
     };
 }
 
-pub fn main() {
+pub fn main() -> Result<()> {
     let cli = Cli::parse_from(wild::args());
 
     match cli.command {
         Command::Check => issue!(7),
         Command::Dependencies => issue!(8),
         Command::Expand => issue!(9),
-        Command::Highlight(cmd) => cmd.execute().unwrap(),
-        Command::Format(cmd) => cmd.execute().unwrap(),
+        Command::Highlight(cmd) => cmd.execute()?,
+        Command::Format(cmd) => cmd.execute()?,
         Command::Parse => issue!(11),
         #[cfg(feature = "cli-complete")]
-        Command::Completions(cmd) => cmd.execute().unwrap(),
+        Command::Completions(cmd) => cmd.execute()?,
     }
+
+    Ok(())
 }

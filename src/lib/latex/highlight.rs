@@ -1,4 +1,5 @@
 //! Highlighting parts of LaTeX documents via [`Token`] iterators.
+use crate::error::Result;
 #[cfg(feature = "strum")]
 use crate::latex::token::TokenDiscriminants;
 use crate::latex::token::{Span, SpannedToken, Token};
@@ -50,7 +51,7 @@ pub trait Highlighter<'source>: Iterator<Item = (bool, SpannedToken<'source>)> {
         source: &'source str,
         buffer: &mut W,
         highlight_color: &ColorSpec,
-    ) -> std::io::Result<()>
+    ) -> Result<()>
     where
         W: WriteColor,
     {
