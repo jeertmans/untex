@@ -2,6 +2,7 @@
 
 use crate::cli::io::{InputArgs, OutputArgs};
 use crate::cli::traits::Execute;
+use crate::error::Error;
 use crate::latex::highlight::*;
 use crate::latex::token::{Token, TokenDiscriminants};
 use clap::{Parser, ValueEnum};
@@ -53,7 +54,7 @@ pub struct HighlightCommand {
 }
 
 impl Execute for HighlightCommand {
-    type Error = std::io::Error;
+    type Error = Error;
     fn execute(self) -> Result<(), Self::Error> {
         let mut stdout = self.output_args.stdout();
         let sources = self.input_args.read_sources().unwrap();

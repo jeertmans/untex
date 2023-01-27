@@ -1,6 +1,7 @@
 //! Completion scripts generation with [`clap_complete`].
 
 use super::traits::Execute;
+use crate::error::Error;
 use clap::{Command, Parser};
 use clap_complete::{generate, shells::Shell};
 use std::io;
@@ -30,7 +31,7 @@ impl CompleteCommand {
 }
 
 impl Execute for CompleteCommand {
-    type Error = io::Error;
+    type Error = Error;
     fn execute(self) -> Result<(), Self::Error> {
         self.generate_completion_file(super::build_cli, &mut io::stdout());
         Ok(())

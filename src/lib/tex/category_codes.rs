@@ -5,6 +5,7 @@
 //! Since TeX is limited to ASCII characters (by default), functions defined
 //! here are working with bytes (slice of [`u8`]) instead of [`str`].
 
+use crate::error::Error;
 use logos::Logos;
 
 #[derive(Debug, PartialEq, Logos)]
@@ -113,7 +114,7 @@ pub enum CategoryCode {
 macro_rules! impl_try_from {
     ($ty:ty) => {
         impl std::convert::TryFrom<$ty> for CategoryCode {
-            type Error = $ty;
+            type Error = Error;
             #[inline]
             fn try_from(code: $ty) -> Result<Self, Self::Error> {
                 match code {
@@ -133,7 +134,7 @@ macro_rules! impl_try_from {
                     13 => Ok(CategoryCode::Active),
                     14 => Ok(CategoryCode::CommentChar),
                     15 => Ok(CategoryCode::InvalidChar),
-                    x => Err(x),
+                    x => Err(Error::InvalidCategoryCode(x.to_string())),
                 }
             }
         }

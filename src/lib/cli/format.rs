@@ -2,6 +2,7 @@
 
 use crate::cli::io::{InputArgs, OutputArgs};
 use crate::cli::traits::Execute;
+use crate::error::Error;
 use crate::latex::format::*;
 use crate::latex::token::Token;
 use clap::Parser;
@@ -20,7 +21,7 @@ pub struct FormatCommand {
 }
 
 impl Execute for FormatCommand {
-    type Error = std::io::Error;
+    type Error = Error;
     fn execute(self) -> Result<(), Self::Error> {
         let mut stdout = self.output_args.stdout();
         let sources = self.input_args.read_sources().unwrap();

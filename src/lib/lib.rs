@@ -30,6 +30,7 @@
 //! on improving this tool.
 #[cfg(feature = "cli")]
 pub mod cli;
+pub mod error;
 pub mod latex;
 pub mod prelude;
 pub mod tex;
