@@ -1,5 +1,5 @@
 //! (La)TeX code pretty formatting with [`latex::format`](crate::latex::format).
-//!
+
 use crate::cli::io::{InputArgs, OutputArgs};
 use crate::cli::traits::Execute;
 use crate::latex::format::*;
