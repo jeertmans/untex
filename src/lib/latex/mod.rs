@@ -8,4 +8,5 @@
 //! available here: <https://latexref.xyz/dev/latex2e.pdf>.
 pub mod format;
 pub mod highlight;
+pub mod parse;
 pub mod token;

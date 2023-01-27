@@ -1,3 +1,6 @@
+//! *WIP* Parsing [`Token`] iterators into more usable structures.
+
+/*
 use crate::error::Result;
 use crate::token::Token;
 use itertools::Itertools;
@@ -141,3 +144,4 @@ struct Environment<'source> {
     args: Option<Arguments<'source>>,
     span: Span,
 }
+*/
