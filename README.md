@@ -1,9 +1,9 @@
 # UnTeX
 
 [![Crates.io](https://img.shields.io/crates/v/untex)](https://crates.io/crates/untex)
-[![docs.rs](https://img.shields.io/docsrs/untex)](https://docs.rs/untex)
+[![docs.rs](https://img.shields.io/docsrs/untex)](https://docs.rs/untex/0.4.0-beta/untex/index.html)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/3bbc6f75856b4c4f85b6a7e509e0ccbf)](https://www.codacy.com/gh/jeertmans/untex/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jeertmans/untex&amp;utm_campaign=Badge_Grade)
-[![codecov](https://codecov.io/github/jeertmans/untex/branch/master/graph/badge.svg?token=76STP1K1U1)](https://codecov.io/github/jeertmans/untex)
+[![codecov](https://codecov.io/gh/jeertmans/untex/branch/main/graph/badge.svg?token=76STP1K1U1)](https://codecov.io/gh/jeertmans/untex)
 
 UnTeX is both a library and an executable that allows you to manipulate and
 understand TeX files.
