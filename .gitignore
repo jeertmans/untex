@@ -1,1 +1,3 @@
 /target
+
+fuzz/Cargo.lock
