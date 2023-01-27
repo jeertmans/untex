@@ -1,4 +1,4 @@
-//! *WIP* Parsing [`Token`] iterators into more usable structures.
+//! *WIP* Parsing [`Token`](crate::latex::token::Token) iterators into more usable structures.
 
 /*
 use crate::error::Result;
