@@ -66,7 +66,7 @@ echo "% this is a comment\nthis is not a comment" | untex hl -t comment
 You can use UnTeX in your Rust project by adding to your `Cargo.toml`:
 
 ```toml
-untex = "^0.4.0"
+untex = "^0.4.0-beta"
 ```
 
 ### Documentation
