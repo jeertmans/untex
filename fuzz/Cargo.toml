@@ -1,11 +1,8 @@
-[package]
-name = "untex-fuzz"
-version = "0.0.0"
-publish = false
-edition = "2021"
-
-[package.metadata]
-cargo-fuzz = true
+[[bin]]
+doc = false
+name = "fuzz_target_1"
+path = "fuzz_targets/fuzz_target_1.rs"
+test = false
 
 [dependencies]
 fuzz = "0.1.1"
@@ -15,15 +12,18 @@ logos = "0.12.1"
 [dependencies.untex]
 path = ".."
 
-# Prevent this from interfering with workspaces
-[workspace]
-members = ["."]
+[package]
+edition = "2021"
+name = "untex-fuzz"
+publish = false
+version = "0.0.0"
+
+[package.metadata]
+cargo-fuzz = true
 
 [profile.release]
 debug = 1
 
-[[bin]]
-name = "fuzz_target_1"
-path = "fuzz_targets/fuzz_target_1.rs"
-test = false
-doc = false
+# Prevent this from interfering with workspaces
+[workspace]
+members = ["."]
