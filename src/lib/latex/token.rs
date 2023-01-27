@@ -26,74 +26,97 @@ fn parse_environment_end<'source>(lex: &mut Lexer<'source, Token<'source>>) -> &
 /// Enumerates all meaningful tokens that can
 /// help parse a LaTeX document.
 #[derive(Clone, Debug, Logos, PartialEq, Eq)]
-#[allow(missing_docs)]
 #[cfg_attr(feature = "strum", derive(EnumDiscriminants))]
-#[cfg_attr(feature = "strum", strum_discriminants(allow(missing_docs)))]
 #[cfg_attr(feature = "cli", strum_discriminants(derive(clap::ValueEnum)))]
 pub enum Token<'source> {
+    /// And `'&'`, or "ampersand", character.
     #[token("&")]
     And,
 
+    /// Asterix `'*'` character.
     #[token("*")]
     Asterix,
 
+    /// At `'@'` character.
     #[token("@")]
     At,
 
+    /// Left curly brace `'{'` character.
     #[token("{")]
     BraceOpen,
 
+    /// Right curly brace `'}'` character.
     #[token("}")]
     BraceClose,
 
+    /// Left bracket `'['` character.
     #[token("]")]
     BracketClose,
 
+    /// Right bracket `']'` character.
     #[token("[")]
     BracketOpen,
 
+    /// Colon `':'` character.
     #[token(":")]
     Colon,
 
+    /// Comma `','` character.
     #[token(",")]
     Comma,
 
+    /// A valid command name, including leading backslash `\`,
+    /// matching regex `r"\\[a-zA-Z]+"`.
     #[regex(r"\\[a-zA-Z]+")]
     CommandName,
 
+    /// A comment, matching anyway after a non-escaped percent-sign `'%'` is encountered.
     #[regex("%.*")]
     Comment,
 
+    /// Indicates the closing of display math, with `"\]"'.
     #[token(r"\]")]
     DisplayMathClose,
 
+    /// Indicates the opening of display math, with `"\["'.
     #[token(r"\[")]
     DisplayMathOpen,
 
+    /// `"\documentclass"` command.
     #[token(r"\documentclass")]
     DocumentClass,
 
+    /// Dollar sign `'$'` character.
     #[token("$")]
     DollarSign,
 
+    /// Comma `'.'` character.
     #[token(".")]
     Dot,
 
+    /// Double-or-escaped backslash `"\\"`.
     #[token(r"\\")]
     DoubleBackslash,
 
+    /// Double dollar sign `"$$"`.
     #[token("$$")]
     DoubleDollarSign,
 
+    /// A valid environment begin, including leading backslash `\`
+    /// and environment name, matching regex `r"\\begin\{[a-zA-Z]+\*?\}"`.
     #[regex(r"\\begin\{[a-zA-Z]+\*?\}", parse_environment_begin)]
     EnvironmentBegin(&'source str),
 
+    /// A valid environment end, including leading backslash `\`
+    /// and environment name, matching regex `r"\\end\{[a-zA-Z]+\*?\}"`.
     #[regex(r"\\end\{[a-zA-Z]+\*?\}", parse_environment_end)]
     EnvironmentEnd(&'source str),
 
+    /// Equal sign `'='` character.
     #[token("=")]
     EqualSign,
 
+    /// Special escaped character `'\x'` that should be interpreted as `'x'`.
     #[token(r"\{")]
     #[token(r"\}")]
     #[token(r"\_")]
@@ -103,24 +126,31 @@ pub enum Token<'source> {
     #[token(r"\#")]
     EscapedChar,
 
+    /// Exclamation mark `'!'` character.
     #[token("!")]
     ExclamationMark,
 
+    /// Hash, or sharp, `'#'` character.
     #[token("#")]
     Hash,
 
+    /// Hat, caret or circumflex, `'^'` character.
     #[token("^")]
     Hat,
 
+    /// Hyphen, or minus, `'-'` character.
     #[token("-")]
     Hyphen,
 
+    /// Indicates the closing of inline math, with `"\)"'.
     #[token(r"\)")]
     InlineMathClose,
 
+    /// Indicates the opening of inline math, with `"\("'.
     #[token(r"\(")]
     InlineMathOpen,
 
+    /// Special escaped character `'\x'` that should be interpreted as a space.
     #[token(r"\,")]
     #[token(r"\:")]
     #[token(r"\;")]
@@ -128,47 +158,63 @@ pub enum Token<'source> {
     #[token(r"\ ")]
     InsertSpace,
 
+    /// Indicates an invalid command name, that should match everything
+    /// escaped sequence that has invalid syntax.
     #[regex(r"\\[^a-zA-Z]")]
     InvalidCommand,
 
+    /// Indicates a newline, either with `'\n'` or `"\r\n"`.
     #[token("\n")]
     #[token("\r\n")]
     Newline,
 
+    /// Indicates a valid number matching `"[0-9]+"`.
     #[regex("[0-9]+")]
     Number,
 
+    /// Indicates any other character that has no special meaning.
     #[error]
     Other,
 
     /// Variant to be allocated later by the user.
     OwnedString(String),
 
+    /// Right paresentheses `')'` character.
     #[token(")")]
     ParenClose,
 
+    /// Left paresentheses `'('` character.
     #[token("(")]
     ParenOpen,
 
+    /// Plus sign `'+'` character.
     #[token("+")]
     PlusSign,
 
+    /// Question mark `'?'` character.
     #[token("?")]
     QuestionMark,
 
+    /// Semicolon `':'` character.
     #[token(";")]
     Semicolon,
 
-    #[regex("[ \t]+")]
+    /// Indicate any number of tabs or spaces
+    /// matching regex `r"[ \t]+"`.
+    #[regex(r"[ \t]+")]
     TabsOrSpaces,
 
+    /// Tilde `'~'` character.
     #[token("~")]
     Tilde,
 
+    /// Underscore `'_'` character.
     #[token("_")]
     Underscore,
 
-    #[regex(r"[a-zA-Z]+")]
+    /// Indicates an ASCII-letters only word
+    /// matching regex `"[a-zA-Z]+"`.
+    #[regex("[a-zA-Z]+")]
     Word,
 }
 
