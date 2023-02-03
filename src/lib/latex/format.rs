@@ -79,27 +79,31 @@ where
             },
             Some(&(Token::EnvironmentEnd(_), _)) => {
                 // To count an end envirornment only once
-                if !self.is_indented {
+                if !self.is_indented && self.inside_document{
                     self.target_indentation_level -= 1;
                 }
             },
             _ =>{}
         };
 
-        if !self.is_indented && self.inside_document {
+        if !self.is_indented {
             match self.iter.peek() {
                 // Remove current indent
                 Some(&(Token::TabsOrSpaces, _)) => {
-                    return self.iter.next();
+                    self.iter.next();
+                    return self.next();
                 },
                 _ => {}
             }
 
             self.is_indented = true;
             let mut indentation_value: String = "".to_owned();
+            let mut test = 0;
             for _ in 0..self.target_indentation_level{
-                indentation_value.push_str(&self.indent_chars)
+                indentation_value.push_str(&self.indent_chars);
+                test += 1;
             }
+            //println!("{:?}", test);
 
             // Cannot use .. to define the range because it is a Full Range
             let custom_indentation: SpannedToken<'source> = (Token::OwnedString(String::from(indentation_value)), 0..1);
@@ -108,7 +112,9 @@ where
             // Post indent matching
             match self.iter.peek() {
                 Some(&(Token::EnvironmentBegin(_), _)) => {
-                    self.target_indentation_level += 1;
+                    if self.inside_document {
+                        self.target_indentation_level += 1;
+                    }
                 },
                 Some(&(Token::Newline, _)) => {
                     self.is_indented = false;
@@ -119,5 +125,66 @@ where
             };
             self.iter.next()
         }
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use logos::Logos;
+    use std::io::BufWriter;
+
+    #[test]
+    fn test_document_auto_indent() {
+        let source = r#"
+\documentclass{article}
+  \usepackage{tikz} % Indent in preamble
+
+\begin{test}
+  Nothing should be indented
+\end{test}
+
+\begin{document}
+  Good indentation
+    \begin{tikzpicture}[scale=1.5] % Wrong indentation
+\draw[thick,fill=gray!60] (0,0) rectangle (1,1); % Also wrong
+    \end{tikzpicture}
+It should go back to an indentation level of one
+\end{document}
+
+    % Identation after document
+"#;
+
+        let result = r#"
+\documentclass{article}
+\usepackage{tikz} % Indent in preamble
+
+\begin{test}
+Nothing should be indented
+\end{test}
+
+\begin{document}
+  Good indentation
+  \begin{tikzpicture}[scale=1.5] % Wrong indentation
+    \draw[thick,fill=gray!60] (0,0) rectangle (1,1); % Also wrong
+  \end{tikzpicture}
+  It should go back to an indentation level of one
+\end{document}
+
+% Identation after document
+"#;
+
+        let iter = Token::lexer(source).spanned();
+        let mut buf = BufWriter::new(Vec::new());
+
+
+        AutoIndentFormatter::new(iter).write_formatted(source, &mut buf);
+        //let output = std::str::from_utf8(buf.as_slice()).unwrap().to_string();
+        let bytes = buf.into_inner();
+        let string = String::from_utf8(bytes.unwrap());
+
+        assert_eq!(string.unwrap(), result)
+
     }
 }
