@@ -58,7 +58,13 @@ where
 {
     /// Create a new dummy formatter.
     pub fn new(iter: I) -> Self {
-        Self { iter: iter.peekable(), inside_document: false, target_indentation_level: 0, is_indented: false , indent_chars: String::from("  ")}
+        Self {
+            iter: iter.peekable(),
+            inside_document: false,
+            target_indentation_level: 0,
+            is_indented: false,
+            indent_chars: String::from("  "),
+        }
     }
 }
 
@@ -68,7 +74,6 @@ where
 {
     type Item = SpannedToken<'source>;
 
-
     fn next(&mut self) -> Option<Self::Item> {
         // Auto Indent Formatter
 
@@ -76,14 +81,14 @@ where
         match self.iter.peek() {
             Some(&(Token::EnvironmentBegin("document"), _)) => {
                 self.inside_document = true;
-            },
+            }
             Some(&(Token::EnvironmentEnd(_), _)) => {
                 // To count an end envirornment only once
-                if !self.is_indented && self.inside_document{
+                if !self.is_indented && self.inside_document {
                     self.target_indentation_level -= 1;
                 }
-            },
-            _ =>{}
+            }
+            _ => {}
         };
 
         if !self.is_indented {
@@ -92,21 +97,19 @@ where
                 Some(&(Token::TabsOrSpaces, _)) => {
                     self.iter.next();
                     return self.next();
-                },
+                }
                 _ => {}
             }
 
             self.is_indented = true;
             let mut indentation_value: String = "".to_owned();
-            let mut test = 0;
-            for _ in 0..self.target_indentation_level{
+            for _ in 0..self.target_indentation_level {
                 indentation_value.push_str(&self.indent_chars);
-                test += 1;
             }
-            //println!("{:?}", test);
 
             // Cannot use .. to define the range because it is a Full Range
-            let custom_indentation: SpannedToken<'source> = (Token::OwnedString(String::from(indentation_value)), 0..1);
+            let custom_indentation: SpannedToken<'source> =
+                (Token::OwnedString(String::from(indentation_value)), 0..1);
             Some(custom_indentation)
         } else {
             // Post indent matching
@@ -115,19 +118,16 @@ where
                     if self.inside_document {
                         self.target_indentation_level += 1;
                     }
-                },
+                }
                 Some(&(Token::Newline, _)) => {
                     self.is_indented = false;
-                },
-                _next => {
                 }
-                    ,
+                _next => {}
             };
             self.iter.next()
         }
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -178,13 +178,12 @@ Nothing should be indented
         let iter = Token::lexer(source).spanned();
         let mut buf = BufWriter::new(Vec::new());
 
-
-        AutoIndentFormatter::new(iter).write_formatted(source, &mut buf);
-        //let output = std::str::from_utf8(buf.as_slice()).unwrap().to_string();
+        AutoIndentFormatter::new(iter)
+            .write_formatted(source, &mut buf)
+            .unwrap();
         let bytes = buf.into_inner();
         let string = String::from_utf8(bytes.unwrap());
 
         assert_eq!(string.unwrap(), result)
-
     }
 }
