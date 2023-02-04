@@ -29,7 +29,7 @@ impl Execute for FormatCommand {
         for source in sources.iter() {
             let iter = Token::lexer(source.as_str()).spanned();
 
-            DummyFormatter::new(iter).write_formatted(source.as_str(), &mut stdout)?;
+            AutoIndentFormatter::new(iter).write_formatted(source.as_str(), &mut stdout)?;
         }
         Ok(())
     }
