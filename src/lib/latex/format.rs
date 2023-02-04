@@ -92,13 +92,10 @@ where
         };
 
         if !self.is_indented {
-            match self.iter.peek() {
-                // Remove current indent
-                Some(&(Token::TabsOrSpaces, _)) => {
-                    self.iter.next();
-                    return self.next();
-                }
-                _ => {}
+            // Remove current indent
+            if let Some(&(Token::TabsOrSpaces, _)) = self.iter.peek() {
+                self.iter.next();
+                return self.next();
             }
 
             self.is_indented = true;
@@ -109,7 +106,7 @@ where
 
             // Cannot use .. to define the range because it is a Full Range
             let custom_indentation: SpannedToken<'source> =
-                (Token::OwnedString(String::from(indentation_value)), 0..1);
+                (Token::OwnedString(indentation_value), 0..1);
             Some(custom_indentation)
         } else {
             // Post indent matching
