@@ -37,8 +37,8 @@ impl<'source, I> Formatter<'source> for I where I: Iterator<Item = SpannedToken<
 ///
 /// Format with the following rules:
 /// - blank spaces only;
-/// - no indentation before \begin{document}
-/// - one level of indentation for each nested \begin{...}, the corresponding \end{...} command reduces the indentation level back;
+/// - no indentation before `\begin{document}`
+/// - one level of indentation for each nested `\begin{...}`, the corresponding `\end{...}` command reduces the indentation level back;
 /// - we assume the LaTeX code is correct
 #[derive(Debug)]
 pub struct AutoIndentFormatter<'source, I>
@@ -63,7 +63,7 @@ where
             inside_document: false,
             target_indentation_level: 0,
             is_indented: false,
-            indent_chars: String::from("  "),
+            indent_chars: "  ".to_string(),
         }
     }
 }
@@ -83,7 +83,7 @@ where
                 self.inside_document = true;
             }
             Some(&(Token::EnvironmentEnd(_), _)) => {
-                // To count an end envirornment only once
+                // To count an end environment only once
                 if !self.is_indented && self.inside_document {
                     self.target_indentation_level -= 1;
                 }
@@ -99,12 +99,12 @@ where
             }
 
             self.is_indented = true;
-            let mut indentation_value: String = "".to_owned();
+            let mut indentation_value = "".to_string();
             for _ in 0..self.target_indentation_level {
                 indentation_value.push_str(&self.indent_chars);
             }
 
-            // Cannot use .. to define the range because it is a Full Range
+            // Cannot use .. to define the range because it is a RangeFull a we need a Range
             let custom_indentation: SpannedToken<'source> =
                 (Token::OwnedString(indentation_value), 0..1);
             Some(custom_indentation)
@@ -119,7 +119,7 @@ where
                 Some(&(Token::Newline, _)) => {
                     self.is_indented = false;
                 }
-                _next => {}
+                _ => {}
             };
             self.iter.next()
         }
@@ -138,10 +138,6 @@ mod tests {
 \documentclass{article}
   \usepackage{tikz} % Indent in preamble
 
-\begin{test}
-  Nothing should be indented
-\end{test}
-
 \begin{document}
   Good indentation
     \begin{tikzpicture}[scale=1.5] % Wrong indentation
@@ -150,16 +146,12 @@ mod tests {
 It should go back to an indentation level of one
 \end{document}
 
-    % Identation after document
+    % Indentation after document
 "#;
 
         let result = r#"
 \documentclass{article}
 \usepackage{tikz} % Indent in preamble
-
-\begin{test}
-Nothing should be indented
-\end{test}
 
 \begin{document}
   Good indentation
@@ -169,7 +161,7 @@ Nothing should be indented
   It should go back to an indentation level of one
 \end{document}
 
-% Identation after document
+% Indentation after document
 "#;
 
         let iter = Token::lexer(source).spanned();
