@@ -131,6 +131,7 @@ mod tests {
     use super::*;
     use logos::Logos;
     use std::io::BufWriter;
+    use String;
 
     #[test]
     fn test_document_auto_indent() {
