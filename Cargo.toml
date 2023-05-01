@@ -8,7 +8,7 @@ clap = {version = "4.1.1", features = ["derive", "wrap_help"], optional = true}
 clap_complete = {version = "4.1.0", optional = true}
 is-terminal = {version = "0.4.2", optional = true}
 itertools = "0.10.5"
-logos = "0.12.1"
+logos = "0.13.0"
 strum_macros = {version = "0.24.3", optional = true}
 termcolor = {version = "1.2.0", optional = true}
 thiserror = "1.0.38"
