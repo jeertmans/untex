@@ -1,3 +1,12 @@
+> [!WARNING]
+> As of June 10, 2024, I'm officially archiving this project,
+> as I haven't been able to put much time on this project ever since its start.
+> Moreover, I think that lexing TeX code is a task that is way too hard, and I planning to phase
+> to [Typst](https://github.com/typst/typst), a much more modern and fast alternative to LaTeX.
+>
+> I am sorry for all the people who put trust in this project, and I'd be happy to let anyone
+> continue this project.
+
 # UnTeX
 
 [![Crates.io](https://img.shields.io/crates/v/untex)](https://crates.io/crates/untex)
